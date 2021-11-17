@@ -1,0 +1,12 @@
+---
+title: "project research"
+author: "Trevor Isaacson, Noah Smith, Buzz Walter"
+date: "11/17/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## This document is for any research or progress made on the project and is not meant to be the final result
