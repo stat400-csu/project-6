@@ -1,5 +1,5 @@
 ---
-title: "Financial Options and Monte Carlo"
+title: "Monte Carlo Simulations and Financial Options"
 author: "Trevor Isaacson, Noah Smith and Buzz Walter"
 date: "12/7/2021"
 output: pdf_document
@@ -12,11 +12,16 @@ library(tidyverse)
 library(rmarkdown)
 library(ggplot2)
 library(dbplyr)
+library(tinytex)
 ```
 
-**Introduction:**
-  Monte Carlo integration is a statistical computing method used to approximate integrals based on random sampling.  Monte Carlo simulations are computer driven models that generate a large number of samples from a distribution that is characterized by the population of which the samples are being drawn from. The simulations achieve many results from the samples drawn and then averages those results to obtain a final estimate. These multidimensional simulations can then be used to model various outcomes that might be difficult otherwise with numerical integration.  These simulations can be used in many different areas and fields including finance, engineering, supply chain and many others.  
+**Introduction:**   
+Monte Carlo integration is a statistical computing method used to approximate integrals based on random sampling.  Monte Carlo simulations are computer driven models that generate a large number of samples from a distribution that is characterized by the population of which the samples are being drawn from. The simulations achieve many results from the samples drawn and then averages those results to obtain a final estimate. These multidimensional simulations can then be used to model various outcomes that might be difficult otherwise with numerical integration.  These simulations can be used in many different areas and fields including finance, engineering, supply chain and many others.  
   
-  In order to apply what we have learned regarding Monte Carlo methods and simulations, our group was able to identify an article within statistical literature that applies Monte Carlo to financial options.  "Options: A Monte Carlo Approach" was published in 1976 by Phelim P. Boyle at the University of British Columbia in Vancouver, BC, Canada.  While the article is 45 years old, much of the paper can still be applied to today's financial markets and statistical approaches.  
+In order to apply what we have learned regarding Monte Carlo methods and simulations, our group was able to identify an article within statistical literature that applies Monte Carlo to financial options.  "Options: A Monte Carlo Approach" was published in 1976 by Phelim P. Boyle at the University of British Columbia in Vancouver, BC, Canada.  While the article is 45 years old, much of the paper can still be applied to today's financial markets and statistical approaches.  
   
-  Financial options are a very powerful and influential tool used heavily in financial markets.  An option is a contract that is valued based on a different underlying asset or security like a common stock.  The buyer of the contract has the ability to buy or sell the underlying asset.  The contract consists of 
+Financial options are a very powerful and influential tool used heavily in financial markets.  An option is a contract that is valued based on a different underlying asset or security like a common stock.  A single options contract represents 100 shares of the underlying asset it is representing.  Because they 100 represent the underlying asset, options are more risky than common stock as the price moves faster.  The piece of the paper we wish to replicate simulates the process of generating returns on the underlying assets and then deriving the value of the option.  
+  
+
+  
+  
