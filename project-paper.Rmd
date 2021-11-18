@@ -1,0 +1,20 @@
+---
+title: "Financial Options and Monte Carlo"
+author: "Trevor Isaacson, Noah Smith and Buzz Walter"
+date: "12/7/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyr)
+library(tidyverse)
+library(rmarkdown)
+library(ggplot2)
+library(dbplyr)
+```
+
+Monte Carlo integration is a statistical computing method used to approximate integrals based on random sampling.  Monte Carlo simulations are computer driven simulations that generate a large number of samples from a distribution that is characterized by the population of which the samples are being drawn from.  
+
+
+These simulations can be used in many different areas and fields including finance, engineering, supply chain and many others.  
