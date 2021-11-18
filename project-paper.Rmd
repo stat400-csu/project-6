@@ -5,7 +5,7 @@ date: "12/7/2021"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message = FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(tidyr)
 library(tidyverse)
@@ -14,7 +14,7 @@ library(ggplot2)
 library(dbplyr)
 ```
 
-Monte Carlo integration is a statistical computing method used to approximate integrals based on random sampling.  Monte Carlo simulations are computer driven simulations that generate a large number of samples from a distribution that is characterized by the population of which the samples are being drawn from.  
-
-
-These simulations can be used in many different areas and fields including finance, engineering, supply chain and many others.  
+**Introduction:**
+  Monte Carlo integration is a statistical computing method used to approximate integrals based on random sampling.  Monte Carlo simulations are computer driven models that generate a large number of samples from a distribution that is characterized by the population of which the samples are being drawn from. The simulations achieve many results from the samples drawn and then averages those results to obtain a final estimate. These multidimensional simulations can then be used to model various outcomes that might be difficult otherwise with numerical integration.  These simulations can be used in many different areas and fields including finance, engineering, supply chain and many others.  
+  
+  Financial options are 
