@@ -2,7 +2,9 @@
 title: "project research"
 author: "Trevor Isaacson, Noah Smith, Buzz Walter"
 date: "12/7/2021"
-output: pdf_document
+output:
+  pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -13,41 +15,58 @@ library(ggplot2)
 library(dbplyr)
 ```
 
-## This document is for any research or progress made on the project and is not meant to be the final result
+$S_t$ = current stock price at time t    
+r = risk free rate per quarter compounded continuously    
+$\sigma^2$ = the (assumed constant) variance rate per quarter on the underlying stock    
+$D_t$ = the dividend payable at time t   
+E = exercise price of the option    
+T = exercise date of the option   
 
+Expected Return on the Stock = $E(S_T / S_t) = exp(r[T - time])$    
 
-St = current stock price at time t
-r = risk free rate per quarter compounded continuously
-sigma_squared = the (assumed constant) variance rate per quarter on the underlying stock
-Dt = the dividend payable at time t
-E = exercise price of the option
-T = exercise date of the option
-
-Expected Return on the Stock = $E(S_T / S_t) = exp(r[T - time])$
-  Assumed that the ratio of successive stock values follows a lognormal distribution
-Using the properties of the lognormal distribution, this means that we can generate the distribution of stock prices one period hence by forming the RV, 
-  $S_t+1 = S_t*exp[r - sigma^2/2 + sigma*\tilde{x}] $ 
-  where $\tilde{x}$ is a normally distributed random variable with mean = 0 and unit variance
-  It is assumed that time is measured in units of one quarter and $S_t$ represents the stock price just after the quarterly dividend $D_t$ has been paid
+* Assumed that the ratio of successive stock values follows a lognormal distribution    
+* Using the properties of the lognormal distribution, this means that we can generate the distribution of stock prices one period hence by forming the RV, 
+  $S_{t+1} = S_t*exp[r - \sigma^2/2 + \sigma*\tilde{x}]$ 
+  - Where $\tilde{x}$ is a normally distributed random variable with mean = 0 and unit variance         
+* It is assumed that time is measured in units of one quarter and $S_t$ represents the stock price just after the quarterly dividend $D_t$ has been paid        
   
-To set up the simulation method in this case, a value of $S_t+1$ is generated.  
-If this value is greater than $D_t+1$, then ($S_t+1$ - $D_t+1$) is used as the initial value at the start of the second period
-  The procedure is continued until a value of $S_r$ is obtained
-If at some stage $S_t+m (m = 1,2,... (T-time-1)$ is less than or equal to the corresponding dividend payment $D_t+m$ the process stops
-  In this case, another simulation trial is started again from time t
-A series of simulation trials is carried out in this way and the expected value of $MAX[S_r-E, 0]$ is found
-  This quantity is then discounted as the risk-free rate to yield an estimate of the option value $\hat{g}$
-  95% CIs are given by $\hat{g}$ +- $2*\hat{s}/ sqrt(n)$
+To set up the simulation method in this case, a value of $S_{t+1}$ is generated.    
+
+* If this value is greater than $D_{t+1}$, then ($S_{t+1}$ - $D_{t+1}$) is used as the initial value at the start of the second period    
+  - The procedure is continued until a value of $S_r$ is obtained   
+* If at some stage $S_{t+m} (m = 1,2,... (T-time-1)$ is less than or equal to the corresponding dividend payment $D_{t+m}$ the process stops    
+  - In this case, another simulation trial is started again from time t   
+A series of simulation trials is carried out in this way and the expected value of $MAX[S_r-E, 0]$ is found   
+  - This quantity is then discounted as the risk-free rate to yield an estimate of the option value $\hat{g}$     
+  - 95% CIs are given by $\hat{g}$ +- $2*\hat{s}/ sqrt(n)$  
   
-Recreation of Monte Carlo Simulation of Table 1 in Paper:
+**Recreation of Monte Carlo Simulation of Table 1 in Paper:**   
+
+Stock prices of 25, 50 and 75 lead to Stock/Exercise ratios = 0.5, 1, and 1.5
 ```{r}
 trials = 5000
 periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
-stock_prices = c(25, 50, 75)
-
+stockExerciseRatio = c(0.5, 1, 1.25)
+E = 50
+r = 0.015
+sigma_squared = 0.025 
+D = 0.25
 
 
 
 
 ```
+
+The simulation above was computed using the selected values of the underlying parameters:    
+- S = 25, 50, 75 - current stock prices 
+- E = 50    
+- r = 0.015  (per period)    
+- $sigma^2$ = 0.025  (per period)    
+- D = 0.25  (per period)   
+Monte Carlo estimates of options are calculated with even maturities 2 to 20       
+Each estimate was obtained using 5000 trials where each trial corresponds to a possible stock path    
+  
+
+
+
 
