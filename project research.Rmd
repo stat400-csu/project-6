@@ -8,6 +8,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+set.seed(400)
 library(tidyr)
 library(tidyverse)
 library(rmarkdown)
@@ -60,19 +61,11 @@ generate_stock_price = function(stock_price, r, periods_to_maturity, sigma, x_ti
 }
 g = generate_stock_price(stock_price = 50, r, periods_to_maturity[1], sigma_squared, x_tilda)
 hist(g)
+mean(g)
+# simulation 
 
-# call_payoff = function(St, E){
-#   return(max(0.0, St - E))
-# }
-# 
-# payoffs = c()
-# for(i in range(trials)){
-#   St = generate_asset_price(stock_price = 50, r, periods_to_maturity, sigma_squared, x_tilda)
-#   payoffs = call_payoff(St, E)
-# }
-# 
-# 
-# print(price)
+
+
 ```
 
 The simulation above was computed using the selected values of the underlying parameters:    
