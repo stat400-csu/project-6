@@ -25,8 +25,8 @@ T = exercise date of the option
 Expected Return on the Stock = $E(S_T / S_t) = exp(r[T - time])$    
 
 * Assumed that the ratio of successive stock values follows a lognormal distribution    
-* Using the properties of the lognormal distribution, this means that we can generate the distribution of stock prices one period hence by forming the RV, 
-  $S_{t+1} = S_t*exp[r - \sigma^2/2 + \sigma*\tilde{x}]$ 
+* Using the properties of the lognormal distribution, this means that we can generate the distribution of stock prices one period hence by forming the random variable, 
+  $S_{t+1} = S_t*exp[r - \sigma^2/2 + \sigma*\tilde{x}]$
   - Where $\tilde{x}$ is a normally distributed random variable with mean = 0 and unit variance         
 * It is assumed that time is measured in units of one quarter and $S_t$ represents the stock price just after the quarterly dividend $D_t$ has been paid        
   
@@ -46,15 +46,33 @@ Stock prices of 25, 50 and 75 lead to Stock/Exercise ratios = 0.5, 1, and 1.5
 ```{r}
 trials = 5000
 periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
+stock_prices = c(25, 50, 75)
 stockExerciseRatio = c(0.5, 1, 1.25)
 E = 50
 r = 0.015
 sigma_squared = 0.025 
 D = 0.25
+x_tilda = rnorm(trials, mean = 0, sd = 1)
 
+generate_stock_price = function(stock_price, r, periods_to_maturity, sigma, x_tilda){
+  price = stock_price * exp((r - (sigma^2)/2) + sigma * x_tilda)
+  return(price)
+}
+g = generate_stock_price(stock_price = 50, r, periods_to_maturity[1], sigma_squared, x_tilda)
+hist(g)
 
-
-
+# call_payoff = function(St, E){
+#   return(max(0.0, St - E))
+# }
+# 
+# payoffs = c()
+# for(i in range(trials)){
+#   St = generate_asset_price(stock_price = 50, r, periods_to_maturity, sigma_squared, x_tilda)
+#   payoffs = call_payoff(St, E)
+# }
+# 
+# 
+# print(price)
 ```
 
 The simulation above was computed using the selected values of the underlying parameters:    
