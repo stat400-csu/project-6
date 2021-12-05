@@ -53,17 +53,23 @@ E = 50
 r = 0.015
 sigma_squared = 0.025 
 D = 0.25
-x_tilda = rnorm(trials, mean = 0, sd = 1)
+x_tilda = rnorm(1000, mean = 0, sd = 1)
 
 generate_stock_price = function(stock_price, r, periods_to_maturity, sigma, x_tilda){
   price = stock_price * exp((r - (sigma^2)/2) + sigma * x_tilda)
   return(price)
 }
 g = generate_stock_price(stock_price = 50, r, periods_to_maturity[1], sigma_squared, x_tilda)
-hist(g)
-mean(g)
-# simulation 
 
+# simulation 
+for(i in range(trials)){
+  x = rnorm(1000, 0, 1)
+  St = generate_stock_price(stock_price = 50, r, periods_to_maturity[3], sigma_squared, mean(x))
+  while(St > D){
+    St = St - D
+  }
+  print(St * r)
+}
 
 
 ```
