@@ -34,9 +34,20 @@ library(dbplyr)
 
 - A single options contract represents 100 shares of the underlying asset it is representing
 - Contract gives the buyer the right to buy the underlying asset at a specific price on a certain date
+- Valuing options is essentially about determining the probabilities of future prices
+  - The more likely something is to occur, the more expensive an option for that event
+  - The less time to maturity, the less valuable the option 
+  
+## Purpose of the Paper
+
+- To show that Monte Carlo simulations provide a method to obtaining numerical solutions to option valuation problems
+- Two other methods exist and this method should be used as a supplement
+- Boyle's method is simple and flexible as it can be easily modified for different processes
+
+## Overview
+
+- Method uses the fact that the distribution of terminal stock prices is determined by the process generating future stock price movements
 - 
-
-
 
 
 ## Slide with R Output
