@@ -25,7 +25,7 @@ T = exercise date of the option
 
 Expected Return on the Stock = $E(S_T / S_t) = exp(r[T - time])$    
 
-* Assumed that the ratio of successive stock values follows a lognormal distribution    
+* Assumed that the ratio of successive stock values follows a lognormal distribution due to the assumed normal distribution of rates of return. Black-Scholes model assumes this distribution. 
 * Using the properties of the lognormal distribution, this means that we can generate the distribution of stock prices one period hence by forming the random variable, 
   $S_{t+1} = S_t*exp[r - \sigma^2/2 + \sigma*\tilde{x}]$
   - Where $\tilde{x}$ is a normally distributed random variable with mean = 0 and unit variance         
