@@ -1,0 +1,64 @@
+---
+title: "Financial Options: A Monte Carlo Approach"
+author: "Group 6: Trevor Isaacson, Noah Smith and Buzz Walter "
+date: "12/7/2021"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+set.seed(400)
+library(tidyr)
+library(tidyverse)
+library(rmarkdown)
+library(ggplot2)
+library(dbplyr)
+```
+
+## Background
+
+- Our project is based on a paper called "Options: A Monte Carlo Approach"
+- Written by Phelim P. Boyle in 1977 and published in the Journal of Financial Economics
+- Boyle is an Irish economist and a pioneer of quantitative finance
+- He is best known for his use of Monte Carlo methods in option pricing
+
+## What are options?
+
+- Options are a very powerful and influential tool used heavily in financial markets
+- It is a contract that is valued based on an underlying asset or security like a common stock or bond
+  - Derivative, price is linked to price of underlying asset
+- Options are more risky than common stock as the price moves faster
+- Investors use options for income, to hedge risk and to speculate about future market movements
+
+## How do options work?
+
+- A single options contract represents 100 shares of the underlying asset it is representing
+- Contract gives the buyer the right to buy the underlying asset at a specific price on a certain date
+- 
+
+
+
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+
+
+
+
+
+
+
+
+
+
+## References
+https://www.investopedia.com/options-basics-tutorial-4583012
