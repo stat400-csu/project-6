@@ -37,7 +37,7 @@ To set up the simulation method in this case, a value of $S_{t+1}$ is generated.
   - The procedure is continued until a value of $S_r$ is obtained   
 * If at some stage $S_{t+m} (m = 1,2,... (T-time-1)$ is less than or equal to the corresponding dividend payment $D_{t+m}$ the process stops    
   - In this case, another simulation trial is started again from time t   
-A series of simulation trials is carried out in this way and the expected value of $MAX[S_r-E, 0]$ is found   
+* A series of simulation trials is carried out in this way and the expected value of $MAX[S_r-E, 0]$ is found   
   - This quantity is then discounted as the risk-free rate to yield an estimate of the option value $\hat{g}$     
   - 95% CIs are given by $\hat{g}$ +- $2*\hat{s}/ sqrt(n)$  
   
