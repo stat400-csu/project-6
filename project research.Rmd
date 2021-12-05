@@ -34,8 +34,8 @@ Expected Return on the Stock = $E(S_T / S_t) = exp(r[T - time])$
 To set up the simulation method in this case, a value of $S_{t+1}$ is generated.    
 
 * If this value is greater than $D_{t+1}$, then ($S_{t+1}$ - $D_{t+1}$) is used as the initial value at the start of the second period    
-  - The procedure is continued until a value of $S_r$ is obtained   
-* If at some stage $S_{t+m} (m = 1,2,... (T-time-1)$ is less than or equal to the corresponding dividend payment $D_{t+m}$ the process stops    
+  - The procedure is continued until a value of $S_t$ is obtained   
+* If at some stage $S_{t+m} (m = 1,2,... (T-t-1)$ is less than or equal to the corresponding dividend payment $D_{t+m}$ the process stops    
   - In this case, another simulation trial is started again from time t   
 A series of simulation trials is carried out in this way and the expected value of $MAX[S_r-E, 0]$ is found   
   - This quantity is then discounted as the risk-free rate to yield an estimate of the option value $\hat{g}$     
@@ -52,20 +52,46 @@ stockExerciseRatio = c(0.5, 1, 1.25)
 E = 50
 r = 0.015
 sigma_squared = 0.025 
-D = 0.25
-x_tilda = rnorm(trials, mean = 0, sd = 1)
+dividend = 0.25
 
-generate_stock_price = function(stock_price, r, periods_to_maturity, sigma, x_tilda){
-  price = stock_price * exp((r - (sigma^2)/2) + sigma * x_tilda)
-  return(price)
+#chosen from October 2021, but others can be chosen to try to match historical data
+yield_points = c(.09,.1,.11,.16,.36)
+inflation_rate = 0.062
+
+#rate to be used to evaluate the present day value of an investment
+risk_free_rate = function(inflation_rate, period_to_maturity){
+  quarters = c(2,4,8,12,20)
+  interpolate_yield_curve = approxfun(x = quarters, y = yield_points)
+  return(inflation_rate - interpolate_yield_curve(period_to_maturity))
 }
-g = generate_stock_price(stock_price = 50, r, periods_to_maturity[1], sigma_squared, x_tilda)
-hist(g)
-mean(g)
-# simulation 
 
 
+# an individual evaluation of a trial for a single option valuation problem
+generate_option_val = function(stock_price, r, period_to_maturity, sigma){
+  x_tilda = rnorm(periods_to_maturity, mean = 0, sd = 1)
+  for (i in 1:period_to_maturity){
+    new_q_price = stock_price * exp((r - (sigma^2)/2) + sigma * x_tilda[i])
+    #case where trial needs to be restarted from price at quarter t rather than quarter 1(see p. 329 of Boyle(1977))
+    if (new_q_price -  dividend <= 0){
+      stock_price = generate_stock_price(stock_price, r, period_to_maturity - i + 1, sigma)
+      break 
+    }
+    #case where we need to pay out dividends to evaluate new stock price
+    else{
+      stock_price = new_q_price - dividend
+    }
+  }
+  future_option_value = max(c(stock_price - E, 0))
+  return(future_option_value - risk_free_rate(inflation_rate,period_to_maturity)*future_option_value)
+}
 
+#simulation looking at the case of 2 quarters to maturity and a stock price of 25 matching
+option_vals = rep(NA, trials)
+for (i in 1:trials){
+  option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[1],sqrt(sigma_squared))
+}
+print(paste("option value: ",mean(option_vals)))
+print(paste("se of estimate: ",sd(option_vals)/(sqrt(trials))))
 ```
 
 The simulation above was computed using the selected values of the underlying parameters:    
@@ -77,7 +103,6 @@ The simulation above was computed using the selected values of the underlying pa
 Monte Carlo estimates of options are calculated with even maturities 2 to 20       
 Each estimate was obtained using 5000 trials where each trial corresponds to a possible stock path    
   
-
 
 
 
