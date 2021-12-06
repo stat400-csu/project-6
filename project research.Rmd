@@ -55,12 +55,12 @@ sigma_squared = 0.025
 dividend = 0.25
 
 #chosen from October 2021, but others can be chosen to try to match historical data
-yield_points = c(.06,.1,.11,.16,.36)
+yield_points = c(.06, 0.07, 0.085, 0.095, .1, .11, 0.12, 0.14, .16,.36)
 inflation_rate = 0.069
 
 #rate to be used to evaluate the present day value of an investment
 risk_free_rate = function(inflation_rate, period_to_maturity){
-  quarters = c(2,4,8,12,20)
+  quarters = c(2,4,6,8,10,12,14,16,18,20)
   interpolate_yield_curve = approxfun(x = quarters, y = yield_points)
   return(inflation_rate - interpolate_yield_curve(period_to_maturity))
 }
@@ -126,13 +126,19 @@ E = 455
 r = 0.015
 sigma_squared = 0.025
 dividend = 1.4281
-epd = c()
+v = c()
 
-for (i in 1:trials){
-  epd[i] = generate_option_val(453.42, r, periods_to_maturity_epd[1], sqrt(sigma_squared))
+for (j in 1:length(periods_to_maturity)){
+  stock = c()
+  print(periods_to_maturity[j])
+  for (i in 1:trials){
+    stock[i] = generate_option_val(453.42, r, periods_to_maturity[j], sqrt(sigma_squared))
+  }
+  v[j] = mean(stock)
 }
-print(paste("option value: ",mean(epd)))
-print(paste("se of estimate: ",sd(epd)/(sqrt(trials))))
+print(v)
+print(paste("option value: ", mean(stock)))
+print(paste("se of estimate: ", sd(stock)/(sqrt(trials))))
 
 ```
 
