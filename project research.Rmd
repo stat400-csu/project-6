@@ -14,7 +14,6 @@ library(tidyverse)
 library(rmarkdown)
 library(ggplot2)
 library(dbplyr)
-set.seed(42)
 ```
 
 $S_t$ = current stock price at time t    
@@ -46,6 +45,7 @@ A series of simulation trials is carried out in this way and the expected value 
 
 Stock prices of 25, 50 and 75 lead to Stock/Exercise ratios = 0.5, 1, and 1.5
 ```{r}
+
 trials = 5000
 periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
 stock_prices = c(25, 50, 75)
@@ -57,6 +57,7 @@ dividend = 0.25
 
 #chosen from October 2021, but others can be chosen to try to match historical data
 yield_points = c(.09,.1,.11,.16,.36)
+
 inflation_rate = 0.062
 
 #rate to be used to evaluate the present day value of an investment
@@ -259,7 +260,7 @@ set.seed(400)
 trials = 5000
 periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
 stock_prices = c(25, 50, 75)
-stockExerciseRatio = c(0.5, 1, 1.25)
+stockExerciseRatio = c(0.5, 1, 1.5)
 E = 50
 r = 0.015
 sigma = 0.025 
@@ -267,6 +268,8 @@ dividend = 0.25
 
 #chosen from October 2021, but others can be chosen to try to match historical data
 yield_points = c(.09,.1,.11,.16,.36)
+#yield_points = c(.04,.06,.9,.10,.14)
+#inflation_rate = .1585
 inflation_rate = 0.062
 
 #rate to be used to evaluate the present day value of an investment
@@ -317,8 +320,6 @@ for (l in 1:9){
   option_sd_25 = append(option_sd_25,newsd)
 }
 
-option_mean_25
-option_sd_25
 
 
 ## now this is for stock prices at 50
@@ -339,8 +340,7 @@ for (l in 1:9){
   option_sd_50 = append(option_sd_50,newsd)
 }
 
-option_mean_50
-option_sd_50
+
 
 
 ## now this is for stock prices at 75
@@ -361,30 +361,48 @@ for (l in 1:9){
   option_sd_75 = append(option_sd_75,newsd)
 }
 
-option_mean_75
-option_sd_75
 
 
 
-df_25 <- data.frame(Option_values=option_mean_25,
+
+df_25 <- data.frame(Periods_till_maturity=c(2,4,6,8,10,12,14,16,18),
+  Option_values=option_mean_25,
                  Standard_deviation=option_sd_25)
 
 df_25
-df_50 <- data.frame(Option_values=option_mean_50,
+df_50 <- data.frame(Periods_till_maturity=c(2,4,6,8,10,12,14,16,18),
+  Option_values=option_mean_50,
                  Standard_deviation=option_sd_50)
 
 df_50
-df_75 <- data.frame(Option_values=option_mean_75,
+df_75 <- data.frame(Periods_till_maturity=c(2,4,6,8,10,12,14,16,18),
+  Option_values=option_mean_75,
                  Standard_deviation=option_sd_75)
 
 df_75
 
-print(paste("option value: ",mean(option_vals)))
-print(paste("se of estimate: ",sd(option_vals)/(sqrt(trials))))
 
 
 
+ggplot(df_75, aes(x=Periods_till_maturity, y=Option_values)) + 
+  geom_point()+
+  xlab("Number of periods to maturity")+
+  ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Scatter plot of values of options by period to maturity of at stock price of 75")
 
+
+ggplot(df_50, aes(x=Periods_till_maturity, y=Option_values)) + 
+  geom_point()+
+  xlab("Number of periods to maturity")+
+  ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Scatter plot of values of options by period to maturity of at stock price of 50")
+
+
+ggplot(df_25, aes(x=Periods_till_maturity, y=Option_values)) + 
+  geom_point()+
+  xlab("Number of periods to maturity")+
+  ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Scatter plot of values of options by period to maturity of at stock price of 25")
 
 ```
 
