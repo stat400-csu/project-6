@@ -44,6 +44,7 @@ options
 - Valuing options is essentially about determining the probabilities of future prices
   - The more likely something is to occur, the more expensive an option for that event
   - The less time to maturity, the less valuable the option 
+  - Previous to these methods, there was no agreed upon method to determine option prices 
   
 ## European vs American Options
 
@@ -55,6 +56,11 @@ options
 - Two other methods exist and this method should be used as a supplement
 - Boyle's method is simple and flexible as it can be easily modified for different processes
 
+## Monte Carlo
+
+- g hat equation
+- We don't know this integral
+ 
 
 ## Black Scholes Model
 
