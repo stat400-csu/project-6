@@ -266,6 +266,44 @@ ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) +
 
 ```
   
+
+```{r warning = FALSE}
+real_values_25 = c(0.004, 0.087, 0.273, 0.539, 0.879, 1.202, 1.547, 1.897, 2.281)
+table1_25 = data.frame(x = periods_to_maturity, y = real_values_25)
+
+real_values_50 = c(5.121, 7.427, 9.247, 10.793, 11.923, 13.135, 14.281, 15.079, 15.945)
+table1_50 = data.frame(x = periods_to_maturity, y = real_values_50)
+
+real_values_75 = c(26.445, 28.250, 29.832, 31.257, 32.319, 33.491, 34.835, 35.503, 36.382)
+table1_75 = data.frame(x = periods_to_maturity, y = real_values_75)
+
+ggplot() + 
+  geom_point(aes(x=Periods_til_maturity, y=Option_values), df_25) + 
+  geom_line(aes(x=Periods_til_maturity, y=Option_values), df_25) +
+  geom_ribbon(aes(x=Periods_til_maturity, ymin = lower_95_CI, ymax = upper_95_CI), df_25, alpha = 0.3) + 
+  geom_point(aes(x = x, y = y), data = table1_25, color = "red", alpha = 0.5) +
+  geom_line(aes(x = x, y = y), data = table1_25, color = "red", alpha = 0.5) +
+  xlab("Number of Periods to Maturity")+ ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Options at Stock Price of 25")
+
+ggplot(df_50, aes(x=Periods_til_maturity, y=Option_values)) + 
+  geom_point() + geom_line()+
+  geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
+  geom_point(aes(x = x, y = y), data = table1_50, color = "red", alpha = 0.5) +
+  geom_line(aes(x = x, y = y), data = table1_50, color = "red", alpha = 0.5) +
+  xlab("Number of Periods to Maturity")+
+  ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Options at Stock Price of 50")
+
+ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) + 
+  geom_point() + geom_line() +
+  geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
+  geom_point(aes(x = x, y = y), data = table1_75, color = "red", alpha = 0.5) +
+  geom_line(aes(x = x, y = y), data = table1_75, color = "red", alpha = 0.5) +
+  xlab("Number of Periods to Maturity")+ ylab("Option values by Crude Monte Carlo") +
+  ggtitle("Options at Stock Price of 75")
+
+```
   
   
   
