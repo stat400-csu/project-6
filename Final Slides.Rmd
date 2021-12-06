@@ -27,7 +27,6 @@ library(dbplyr)
 stocks
 risk free rate
 options
-log normal distribution
 
 
 ## What are options?
@@ -52,8 +51,13 @@ log normal distribution
 - Two other methods exist and this method should be used as a supplement
 - Boyle's method is simple and flexible as it can be easily modified for different processes
 
-## The LogNormal Distribution
 
+## Black Scholes Model
+
+
+
+
+## The LogNormal Distribution
 
 
 
