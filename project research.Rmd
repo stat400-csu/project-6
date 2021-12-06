@@ -111,26 +111,21 @@ $D_t$ = the dividend payable at time t
 E = exercise price of the option    
 T = exercise date of the option  
   
-Apply to EPD Options:
+Apply to SPY Options:
 Current Price: 453.42
 E = 455
 periods_to_maturity_epd = c(2,4)
 dividend = 1.4281
 June = 27.9, Jan = 39.35
-
-
-
-
 ```{r}
-set.seed(400)
 trials = 5000
-periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
-stock_prices = c(25, 50, 75)
+periods_to_maturity = c(2,3,4,5,6,8,10,12,14,16)
+stock_prices = c(225, 450, 675)
 stockExerciseRatio = c(0.5, 1, 1.25)
-E = 50
+E = 450
 r = 0.015
 sigma = 0.025 
-dividend = 0.25
+dividend = 1.4281
 
 #chosen from October 2021, but others can be chosen to try to match historical data
 yield_points = c(.09,.1,.11,.16,.36)
@@ -175,7 +170,7 @@ option_vals = rep(NA, trials)
 
 for (l in 1:9){
   for (i in 1:trials){
-  option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[l],sqrt(sigma))
+    option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[l],sqrt(sigma))
   }
   option_mean_25 = append(option_mean_25,mean(option_vals))
   newsd = sd(option_vals)/(sqrt(trials))
@@ -195,7 +190,7 @@ option_mean_50 = c()
 option_sd_50 = c()
 for (l in 1:9){
   for (i in 1:trials){
-  option_vals[i] = generate_option_val(stock_prices[2], r, periods_to_maturity[l],sqrt(sigma))
+    option_vals[i] = generate_option_val(stock_prices[2], r, periods_to_maturity[l],sqrt(sigma))
   }
   option_mean_50 = append(option_mean_50,mean(option_vals))
   newsd = sd(option_vals)/(sqrt(trials))
@@ -215,7 +210,7 @@ option_mean_75 = c()
 option_sd_75 = c()
 for (l in 1:9){
   for (i in 1:trials){
-  option_vals[i] = generate_option_val(stock_prices[3], r, periods_to_maturity[l],sqrt(sigma))
+    option_vals[i] = generate_option_val(stock_prices[3], r, periods_to_maturity[l],sqrt(sigma))
   }
   option_mean_75 = append(option_mean_75,mean(option_vals))
   newsd = sd(option_vals)/(sqrt(trials))
@@ -224,14 +219,15 @@ for (l in 1:9){
 
 option_mean_75
 option_sd_75
+dates = c("6/21", "9/21", "12/21", "3/22", "6/22", "12/22", "6/23", "12/23", "06/24")
 
-df_25 <- data.frame(Option_values=option_mean_25, Standard_deviation=option_sd_25)
+df_25 <- data.frame(Quarters = dates, Option_values=option_mean_25, Standard_deviation=option_sd_25)
 df_25
 
-df_50 <- data.frame(Option_values=option_mean_50, Standard_deviation=option_sd_50)
+df_50 <- data.frame(Quarters = dates, Option_values=option_mean_50, Standard_deviation=option_sd_50)
 df_50
 
-df_75 <- data.frame(Option_values=option_mean_75,Standard_deviation=option_sd_75)
+df_75 <- data.frame(Quarters = dates, Option_values=option_mean_75,Standard_deviation=option_sd_75)
 df_75
 
 print(paste("option value: ",mean(option_vals)))
