@@ -311,16 +311,12 @@ option_vals = rep(NA, trials)
 
 for (l in 1:9){
   for (i in 1:trials){
-  option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[l],sqrt(sigma))
-
-
-}
+    option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[l],sqrt(sigma))
+  }
   option_mean_25 = append(option_mean_25,mean(option_vals))
   newsd = sd(option_vals)/(sqrt(trials))
   option_sd_25 = append(option_sd_25,newsd)
 }
-
-
 
 ## now this is for stock prices at 50
 
@@ -331,20 +327,15 @@ option_mean_50 = c()
 option_sd_50 = c()
 for (l in 1:9){
   for (i in 1:trials){
-  option_vals[i] = generate_option_val(stock_prices[2], r, periods_to_maturity[l],sqrt(sigma))
-
-
-}
+    option_vals[i] = generate_option_val(stock_prices[2], r, periods_to_maturity[l],sqrt(sigma))
+  }
   option_mean_50 = append(option_mean_50,mean(option_vals))
   newsd = sd(option_vals)/(sqrt(trials))
   option_sd_50 = append(option_sd_50,newsd)
 }
 
 
-
-
 ## now this is for stock prices at 75
-
 option_vals = rep(NA, trials)
 newmean = c()
 newsd = c()
@@ -352,10 +343,8 @@ option_mean_75 = c()
 option_sd_75 = c()
 for (l in 1:9){
   for (i in 1:trials){
-  option_vals[i] = generate_option_val(stock_prices[3], r, periods_to_maturity[l],sqrt(sigma))
-
-
-}
+    option_vals[i] = generate_option_val(stock_prices[3], r, periods_to_maturity[l],sqrt(sigma))
+  }
   option_mean_75 = append(option_mean_75,mean(option_vals))
   newsd = sd(option_vals)/(sqrt(trials))
   option_sd_75 = append(option_sd_75,newsd)
@@ -364,41 +353,39 @@ for (l in 1:9){
 
 
 
+periods_to_maturity =c(2,4,6,8,10,12,14,16,18)
 
-df_25 <- data.frame(Periods_till_maturity=c(2,4,6,8,10,12,14,16,18),
-  Option_values=option_mean_25,
-                 Standard_deviation=option_sd_25)
-
+df_25 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_25, Standard_deviation=option_sd_25, lower_95_CI = option_mean_25 - 2*sd(option_mean_25)/sqrt(trials), upper_95_CI = option_mean_25 + 2*sd(option_mean_25)/sqrt(trials))
+df_25 = round(df_25, 4)
 df_25
-df_50 <- data.frame(Periods_till_maturity=c(2,4,6,8,10,12,14,16,18),
-  Option_values=option_mean_50,
-                 Standard_deviation=option_sd_50)
 
+df_50 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_50, Standard_deviation=option_sd_50, lower_95_CI = option_mean_50 - 2*sd(option_mean_50)/sqrt(trials), upper_95_CI = option_mean_50 + 2*sd(option_mean_50)/sqrt(trials))
+df_50 = round(df_50, 4)
 df_50
-df_75 <- data.frame(Periods_till_maturity=c(2,4,6,8,10,12,14,16,18),
-  Option_values=option_mean_75,
-                 Standard_deviation=option_sd_75)
 
+df_75 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_75,Standard_deviation=option_sd_75, lower_95_CI = option_mean_75 - 2*sd(option_mean_75)/sqrt(trials), upper_95_CI = option_mean_75 + 2*sd(option_mean_75)/sqrt(trials))
+df_75 = round(df_75, 4)
 df_75
 
 
 
 
-ggplot(df_75, aes(x=Periods_till_maturity, y=Option_values)) + 
+
+ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) + 
   geom_point()+
   xlab("Number of periods to maturity")+
   ylab("Option values by Crude Monte Carlo")+
   ggtitle("Scatter plot of values of options by period to maturity of at stock price of 75")
 
 
-ggplot(df_50, aes(x=Periods_till_maturity, y=Option_values)) + 
+ggplot(df_50, aes(x=Periods_til_maturity, y=Option_values)) + 
   geom_point()+
   xlab("Number of periods to maturity")+
   ylab("Option values by Crude Monte Carlo")+
   ggtitle("Scatter plot of values of options by period to maturity of at stock price of 50")
 
 
-ggplot(df_25, aes(x=Periods_till_maturity, y=Option_values)) + 
+ggplot(df_25, aes(x=Periods_til_maturity, y=Option_values)) + 
   geom_point()+
   xlab("Number of periods to maturity")+
   ylab("Option values by Crude Monte Carlo")+
