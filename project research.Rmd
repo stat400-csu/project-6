@@ -269,7 +269,7 @@ real_values_25 = c(0.004, 0.087, 0.273, 0.539, 0.879, 1.202, 1.547, 1.897, 2.281
 table1_25 = data.frame(x = periods_to_maturity, y = real_values_25)
 
 real_values_50 = c(5.121, 7.427, 9.247, 10.793, 11.923, 13.135, 14.281, 15.079, 15.945)
-table1_25 = data.frame(x = periods_to_maturity, y = real_values_50)
+table1_50 = data.frame(x = periods_to_maturity, y = real_values_50)
 
 real_values_75 = c(26.445, 28.250, 29.832, 31.257, 32.319, 33.491, 34.835, 35.503, 36.382)
 table1_75 = data.frame(x = periods_to_maturity, y = real_values_75)
