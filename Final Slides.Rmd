@@ -13,6 +13,7 @@ library(tidyverse)
 library(rmarkdown)
 library(ggplot2)
 library(dbplyr)
+library(knitr)
 ```
 
 ## Background
@@ -107,6 +108,225 @@ There are two types of financial options: European and American
 
 ## Simulation
 
+
+
+
+
+
+```{r echo = FALSE}
+trials = 5000
+periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
+stock_prices = c(25, 50, 75)
+stockExerciseRatio = c(0.5, 1, 1.25)
+E = 50
+r = 0.015
+sigma_squared = 0.025 
+dividend = 0.25
+
+#chosen from October 2021, but others can be chosen to try to match historical data
+yield_points = c(.09,.1,.11,.16,.36)
+
+inflation_rate = 0.062
+
+#rate to be used to evaluate the present day value of an investment
+risk_free_rate = function(inflation_rate, period_to_maturity){
+  quarters = c(2,4,8,12,20)
+  interpolate_yield_curve = approxfun(x = quarters, y = yield_points)
+  return(inflation_rate - interpolate_yield_curve(period_to_maturity))
+}
+
+
+# an individual evaluation of a trial for a single option valuation problem
+generate_option_val = function(stock_price, r, period_to_maturity, sigma){
+  x_tilda = rnorm(periods_to_maturity, mean = 0, sd = 1)
+  for (i in 1:period_to_maturity){
+    new_q_price = stock_price * exp((r - (sigma^2)/2) + sigma * x_tilda[i])
+    #case where trial needs to be restarted from price at quarter t rather than quarter 1(see p. 329 of Boyle(1977))
+    if (new_q_price -  dividend <= 0){
+      stock_price = generate_option_val(stock_price, r, period_to_maturity - i + 1, sigma)
+      break 
+    }
+    #case where we need to pay out dividends to evaluate new stock price
+    else{
+      stock_price = new_q_price - dividend
+    }
+  }
+  future_option_value = max(c(stock_price - E, 0))
+  return(future_option_value - risk_free_rate(inflation_rate,period_to_maturity)*future_option_value)
+}
+
+#simulation looking at the case of 2 quarters to maturity and a stock price of 25 matching
+option_vals = rep(NA, trials)
+for (i in 1:trials){
+  option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[1],sqrt(sigma_squared))
+}
+# print(paste("option value: ",mean(option_vals)))
+# print(paste("se of estimate: ",sd(option_vals)/(sqrt(trials))))
+```
+
+```{r echo = FALSE, tidy = TRUE}
+set.seed(400)
+trials = 5000
+periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
+stock_prices = c(25, 50, 75)
+stockExerciseRatio = c(0.5, 1, 1.5)
+E = 50
+r = 0.015
+sigma = 0.025 
+dividend = 0.25
+
+#chosen from October 2021, but others can be chosen to try to match historical data
+yield_points = c(.09,.1,.11,.16,.36)
+#yield_points = c(.04,.06,.9,.10,.14)
+#inflation_rate = .1585
+inflation_rate = 0.062
+
+#rate to be used to evaluate the present day value of an investment
+risk_free_rate = function(inflation_rate, periods_to_maturity){
+  quarters = c(2,4,8,12,20)
+  interpolate_yield_curve = approxfun(x = quarters, y = yield_points)
+  return(inflation_rate - interpolate_yield_curve(periods_to_maturity))
+}
+
+
+# an individual evaluation of a trial for a single option valuation problem
+generate_option_val = function(stock_price, r, periods_to_maturity, sigma){
+  x_tilda = rnorm(periods_to_maturity, mean = 0, sd = 1)
+  for (i in 1:periods_to_maturity){
+    new_q_price = stock_price * exp((r - (sigma^2)/2) + sigma * x_tilda[i])
+    #case where trial needs to be restarted from price at quarter t rather than quarter 1(see p. 329 of Boyle(1977))
+    if (new_q_price -  dividend <= 0){
+      stock_price = generate_option_val(stock_price, r, periods_to_maturity - i + 1, sigma)
+      break 
+    }
+    #case where we need to pay out dividends to evaluate new stock price
+    else{
+      stock_price = new_q_price - dividend
+    }
+  }
+  future_option_value = max(c(stock_price - E, 0))
+  return(future_option_value - risk_free_rate(inflation_rate,periods_to_maturity)*future_option_value)
+}
+
+#simulation looking at the case of 2 quarters to maturity and a stock price of 25 matching
+option_vals = rep(NA, trials)
+newmean = c()
+newsd = c()
+option_mean_25 = c()
+option_sd_25 = c()
+
+## need this to make variable option_vals again but empty so numbers dont add to each other
+option_vals = rep(NA, trials)
+
+for (l in 1:9){
+  for (i in 1:trials){
+    option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[l],sqrt(sigma))
+  }
+  option_mean_25 = append(option_mean_25,mean(option_vals))
+  newsd = sd(option_vals)/(sqrt(trials))
+  option_sd_25 = append(option_sd_25,newsd)
+}
+
+## now this is for stock prices at 50
+
+option_vals = rep(NA, trials)
+newmean = c()
+newsd = c()
+option_mean_50 = c()
+option_sd_50 = c()
+for (l in 1:9){
+  for (i in 1:trials){
+    option_vals[i] = generate_option_val(stock_prices[2], r, periods_to_maturity[l],sqrt(sigma))
+  }
+  option_mean_50 = append(option_mean_50,mean(option_vals))
+  newsd = sd(option_vals)/(sqrt(trials))
+  option_sd_50 = append(option_sd_50,newsd)
+}
+
+
+## now this is for stock prices at 75
+option_vals = rep(NA, trials)
+newmean = c()
+newsd = c()
+option_mean_75 = c()
+option_sd_75 = c()
+for (l in 1:9){
+  for (i in 1:trials){
+    option_vals[i] = generate_option_val(stock_prices[3], r, periods_to_maturity[l], sqrt(sigma))
+  }
+  option_mean_75 = append(option_mean_75,mean(option_vals))
+  newsd = sd(option_vals)/(sqrt(trials))
+  option_sd_75 = append(option_sd_75,newsd)
+}
+
+periods_to_maturity =c(2,4,6,8,10,12,14,16,18)
+
+df_25 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_25, Standard_deviation=option_sd_25, lower_95_CI = option_mean_25 - 2*option_sd_25, upper_95_CI = option_mean_25 + 2*option_sd_25)
+df_25 = round(df_25, 4)
+
+df_50 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_50, Standard_deviation=option_sd_50, lower_95_CI = option_mean_50 - 2*option_sd_50, upper_95_CI = option_mean_50 + 2*option_sd_50)
+df_50 = round(df_50, 4)
+
+df_75 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_75,Standard_deviation=option_sd_75, lower_95_CI = option_mean_75 - 2*option_sd_75, upper_95_CI = option_mean_75 + 2*option_sd_75)
+df_75 = round(df_75, 4)
+
+```
+
+## Stock Price = $25
+
+```{r fig.height= 5}
+df_25 %>% kable()
+
+```
+
+## Stock Price = $25
+
+```{r warning = FALSE}
+real_values_25 = c(0.004, 0.087, 0.273, 0.539, 0.879, 1.202, 1.547, 1.897, 2.281)
+table1_25 = data.frame(x = periods_to_maturity, y = real_values_25)
+
+real_values_50 = c(5.121, 7.427, 9.247, 10.793, 11.923, 13.135, 14.281, 15.079, 15.945)
+table1_50 = data.frame(x = periods_to_maturity, y = real_values_50)
+
+real_values_75 = c(26.445, 28.250, 29.832, 31.257, 32.319, 33.491, 34.835, 35.503, 36.382)
+table1_75 = data.frame(x = periods_to_maturity, y = real_values_75)
+
+ggplot() + 
+  geom_point(aes(x=Periods_til_maturity, y=Option_values), df_25) + 
+  geom_line(aes(x=Periods_til_maturity, y=Option_values), df_25) +
+  geom_ribbon(aes(x=Periods_til_maturity, ymin = lower_95_CI, ymax = upper_95_CI), df_25, alpha = 0.3) + 
+  geom_point(aes(x = x, y = y), data = table1_25, color = "red", alpha = 0.5) +
+  geom_line(aes(x = x, y = y), data = table1_25, color = "red", alpha = 0.5) +
+  xlab("Number of Periods to Maturity")+ ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Options at Stock Price of 25")
+
+```
+
+## Stock Price = $50
+
+```{r}
+ggplot(df_50, aes(x=Periods_til_maturity, y=Option_values)) + 
+  geom_point() + geom_line()+
+  geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
+  geom_point(aes(x = x, y = y), data = table1_50, color = "red", alpha = 0.5) +
+  geom_line(aes(x = x, y = y), data = table1_50, color = "red", alpha = 0.5) +
+  xlab("Number of Periods to Maturity")+
+  ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Options at Stock Price of 50")
+```
+
+## Stock Price = $75
+
+```{r}
+ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) + 
+  geom_point() + geom_line() +
+  geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
+  geom_point(aes(x = x, y = y), data = table1_75, color = "red", alpha = 0.5) +
+  geom_line(aes(x = x, y = y), data = table1_75, color = "red", alpha = 0.5) +
+  xlab("Number of Periods to Maturity")+ ylab("Option values by Crude Monte Carlo") +
+  ggtitle("Options at Stock Price of 75")
+
+```
 
 
 
