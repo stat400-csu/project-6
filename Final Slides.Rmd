@@ -29,14 +29,17 @@ library(dbplyr)
   - Derivative, price is linked to price of underlying asset
 - Options are more risky than common stock as the price moves faster
 - Investors use options for income, to hedge risk and to speculate about future market movements
+- When investors sell an underlying stock as an option they receive a premium up front for selling the contract aka the option 
 
 ## How do options work?
 
 - A single options contract represents 100 shares of the underlying asset it is representing
-- Contract gives the buyer the right to buy the underlying asset at a specific price on a certain date
+- Contract gives the buyer the right to buy the underlying asset at a specific price on or by a certain date
 - Valuing options is essentially about determining the probabilities of future prices
   - The more likely something is to occur, the more expensive an option for that event
   - The less time to maturity, the less valuable the option 
+  - As time to maturity decreases on an option the value of the option will decrease as the delta variable for time decreases assuming value of the stock stays constant.
+  - 
   
 ## Purpose of the Paper
 
@@ -52,14 +55,143 @@ library(dbplyr)
 
 ## Slide with R Output
 
-```{r cars, echo = TRUE}
-summary(cars)
+```{r functions, include=FALSE}
+#Back group code this should be include= False
+
+set.seed(400)
+trials = 5000
+periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
+stock_prices = c(25, 50, 75)
+stockExerciseRatio = c(0.5, 1, 1.5)
+E = 50
+r = 0.015
+sigma = 0.025 
+dividend = 0.25
+
+#chosen from October 2021, but others can be chosen to try to match historical data
+yield_points = c(.09,.1,.11,.16,.36)
+#yield_points = c(.04,.06,.9,.10,.14)
+#inflation_rate = .1585
+inflation_rate = 0.062
+
+#rate to be used to evaluate the present day value of an investment
+risk_free_rate = function(inflation_rate, periods_to_maturity){
+  quarters = c(2,4,8,12,20)
+  interpolate_yield_curve = approxfun(x = quarters, y = yield_points)
+  return(inflation_rate - interpolate_yield_curve(periods_to_maturity))
+}
+
+
+# an individual evaluation of a trial for a single option valuation problem
+generate_option_val = function(stock_price, r, periods_to_maturity, sigma){
+  x_tilda = rnorm(periods_to_maturity, mean = 0, sd = 1)
+  for (i in 1:periods_to_maturity){
+    new_q_price = stock_price * exp((r - (sigma^2)/2) + sigma * x_tilda[i])
+    #case where trial needs to be restarted from price at quarter t rather than quarter 1(see p. 329 of Boyle(1977))
+    if (new_q_price -  dividend <= 0){
+      stock_price = generate_stock_price(stock_price, r, periods_to_maturity - i + 1, sigma)
+      break 
+    }
+    #case where we need to pay out dividends to evaluate new stock price
+    else{
+      stock_price = new_q_price - dividend
+    }
+  }
+  future_option_value = max(c(stock_price - E, 0))
+  return(future_option_value - risk_free_rate(inflation_rate,periods_to_maturity)*future_option_value)
+}
+
+#simulation looking at the case of 2 quarters to maturity and a stock price of 25 matching
+option_vals = rep(NA, trials)
+newmean = c()
+newsd = c()
+option_mean_25 = c()
+option_sd_25 = c()
+
+## need this to make variable option_vals again but empty so numbers dont add to each other
+option_vals = rep(NA, trials)
+
+for (l in 1:9){
+  for (i in 1:trials){
+  option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[l],sqrt(sigma))
+
+
+}
+  option_mean_25 = append(option_mean_25,mean(option_vals))
+  newsd = sd(option_vals)/(sqrt(trials))
+  option_sd_25 = append(option_sd_25,newsd)
+}
+
+
+
+## now this is for stock prices at 50
+
+option_vals = rep(NA, trials)
+newmean = c()
+newsd = c()
+option_mean_50 = c()
+option_sd_50 = c()
+for (l in 1:9){
+  for (i in 1:trials){
+  option_vals[i] = generate_option_val(stock_prices[2], r, periods_to_maturity[l],sqrt(sigma))
+
+
+}
+  option_mean_50 = append(option_mean_50,mean(option_vals))
+  newsd = sd(option_vals)/(sqrt(trials))
+  option_sd_50 = append(option_sd_50,newsd)
+}
+
+
+
+
+## now this is for stock prices at 75
+
+option_vals = rep(NA, trials)
+newmean = c()
+newsd = c()
+option_mean_75 = c()
+option_sd_75 = c()
+for (l in 1:9){
+  for (i in 1:trials){
+  option_vals[i] = generate_option_val(stock_prices[3], r, periods_to_maturity[l],sqrt(sigma))
+
+
+}
+  option_mean_75 = append(option_mean_75,mean(option_vals))
+  newsd = sd(option_vals)/(sqrt(trials))
+  option_sd_75 = append(option_sd_75,newsd)
+}
+
+
+
+
+
+df_25 <- data.frame(Periods_till_maturity=c(2,4,6,8,10,12,14,16,18),
+  Option_values=option_mean_25,
+                 Standard_deviation=option_sd_25)
+
+df_25
+df_50 <- data.frame(Periods_till_maturity=c(2,4,6,8,10,12,14,16,18),
+  Option_values=option_mean_50,
+                 Standard_deviation=option_sd_50)
+
+df_50
+df_75 <- data.frame(Periods_till_maturity=c(2,4,6,8,10,12,14,16,18),
+  Option_values=option_mean_75,
+                 Standard_deviation=option_sd_75)
+
+df_75
+
+
 ```
 
 ## Slide with Plot
 
 ```{r pressure}
-plot(pressure)
+df_25
+df_50
+df_75
 ```
 
 
@@ -73,3 +205,9 @@ plot(pressure)
 
 ## References
 https://www.investopedia.com/options-basics-tutorial-4583012
+
+https://www.investopedia.com/terms/r/risk-freerate.asp
+
+https://www.investopedia.com/terms/b/blackscholes.asp
+
+https://www.in2013dollars.com/UK-inflation-rate-in-1977
