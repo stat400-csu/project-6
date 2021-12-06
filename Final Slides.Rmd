@@ -49,6 +49,10 @@ options
 ## European vs American Options
 
 
+
+## The LogNormal Distribution
+
+
   
 ## Purpose of the Paper
 
@@ -58,16 +62,24 @@ options
 
 ## Monte Carlo
 
-- g hat equation
-- We don't know this integral
- 
+- g hat = max[St - E, 0]
+- f(y) = lognormal distribution
+- g(y) = result we get for final stock price
+  - random variable because we include x tilda
+
 
 ## Black Scholes Model
 
 
 
 
-## The LogNormal Distribution
+## Our Method
+
+
+
+
+## Simulation
+
 
 
 
