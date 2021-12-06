@@ -246,6 +246,7 @@ ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) +
 
 
 ```{r warning=FALSE}
+
 ggplot(df_25, aes(x=Periods_til_maturity, y=Option_values)) + 
   geom_point()+ geom_line()+
   geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
