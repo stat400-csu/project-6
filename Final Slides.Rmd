@@ -22,6 +22,14 @@ library(dbplyr)
 - Boyle is an Irish economist and a pioneer of quantitative finance
 - He is best known for his use of Monte Carlo methods in option pricing
 
+## Financial Terminology
+
+stocks
+risk free rate
+options
+log normal distribution
+
+
 ## What are options?
 
 - Options are a very powerful and influential tool used heavily in financial markets
@@ -43,6 +51,11 @@ library(dbplyr)
 - To show that Monte Carlo simulations provide a method to obtaining numerical solutions to option valuation problems
 - Two other methods exist and this method should be used as a supplement
 - Boyle's method is simple and flexible as it can be easily modified for different processes
+
+## The LogNormal Distribution
+
+
+
 
 ## Overview
 
