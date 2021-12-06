@@ -30,10 +30,22 @@ library(dbplyr)
 - Treasury Yield: yield of a US Treasury Bond matching investment duration
 - Risk Free Rate: Represents the interest an investor would expect from a risk-free investment over a specific time
   - RFr = Treasury Yield - Inflation Rate
-
+  
 ## The LogNormal Distribution
 
 
+
+
+## The LogNormal Distribution
+
+```{r warning=FALSE, echo = FALSE}
+sample1 <- rlnorm(n=1e4, mean=0, sd=1)
+sample2 <- rlnorm(n=1e4, mean=1, sd=1)
+sample3 <- rlnorm(n=1e4, mean=2, sd=1)
+lognorms <- data.frame(Value = c(sample1, sample2, sample3), x_bar = factor(c(rep(0, length(sample1)), rep(1, length(sample2)), rep(2, length(sample3)))))
+ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_bar)) +
+  geom_density(adjust = 1.5, alpha = .4) + scale_x_continuous(limits =c(0, 25)) + ggtitle("LogNormal Distributions")
+```
 
 
 ## What are options?
@@ -55,34 +67,38 @@ library(dbplyr)
   
 ## European vs American Options
 
-
+There are two types of financial options: European and American
+- 
 
   
 ## Purpose of the Paper
 
 - To show that Monte Carlo simulations provide a method to obtaining numerical solutions to option valuation problems
+- Option valuation models are important because large amounts of corporate liabilities can be expressed in terms of options
 - Two other methods exist and this method should be used as a supplement
 - Boyle's method is simple and flexible as it can be easily modified for different processes
 
 
 ## Monte Carlo
 
-- g hat = max[St - E, 0]
-- f(y) = lognormal distribution
-- g(y) = result we get for final stock price
+- $\hat{g}$ = MAX[$S_{t+1}$ - E, 0]
+- $f(y)$ = lognormal distribution
+- $g(y)$ = result we get for final stock price
   - random variable because we include x tilda
 
 
 ## Black Scholes Model
 
-- How do we find St
+
 
 
 
 ## Method Overview
 
+- Our Monte Carlo method is used to obtain estimates of option values on dividend paying stocks for European Call options
 - Method uses the fact that the distribution of terminal stock prices is determined by the process generating future stock price movements
-
+- This process can then be simulated to generate a series of stock price trajectories
+- The series determines a set of terminal stock values which can be used to obtain an estimate of the option value
 
 ## How it works
 
@@ -90,7 +106,114 @@ library(dbplyr)
 
 
 ## Simulation
+```{r echo = FALSE}
+trials = 5000
+periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
+stock_prices = c(25, 50, 75)
+stockExerciseRatio = c(0.5, 1, 1.5)
+E = 50
+r = 0.015
+sigma = 0.025 
+dividend = 0.25
+#chosen from October 2021, but others can be chosen to try to match historical data
+yield_points = c(.09,.1,.11,.16,.36)
+#yield_points = c(.04,.06,.9,.10,.14)
+#inflation_rate = .1585
+inflation_rate = 0.062
 
+#rate to be used to evaluate the present day value of an investment
+risk_free_rate = function(inflation_rate, periods_to_maturity){
+  quarters = c(2,4,8,12,20)
+  interpolate_yield_curve = approxfun(x = quarters, y = yield_points)
+  return(inflation_rate - interpolate_yield_curve(periods_to_maturity))
+}
+
+
+# an individual evaluation of a trial for a single option valuation problem
+generate_option_val = function(stock_price, r, periods_to_maturity, sigma){
+  x_tilda = rnorm(periods_to_maturity, mean = 0, sd = 1)
+  for (i in 1:periods_to_maturity){
+    new_q_price = stock_price * exp((r - (sigma^2)/2) + sigma * x_tilda[i])
+    #case where trial needs to be restarted from price at quarter t rather than quarter 1(see p. 329 of Boyle(1977))
+    if (new_q_price -  dividend <= 0){
+      stock_price = generate_option_val(stock_price, r, periods_to_maturity - i + 1, sigma)
+      break 
+    }
+    #case where we need to pay out dividends to evaluate new stock price
+    else{
+      stock_price = new_q_price - dividend
+    }
+  }
+  future_option_value = max(c(stock_price - E, 0))
+  return(future_option_value - risk_free_rate(inflation_rate,periods_to_maturity)*future_option_value)
+}
+
+#simulation looking at the case of 2 quarters to maturity and a stock price of 25 matching
+option_vals = rep(NA, trials)
+newmean = c()
+newsd = c()
+option_mean_25 = c()
+option_sd_25 = c()
+
+## need this to make variable option_vals again but empty so numbers dont add to each other
+option_vals = rep(NA, trials)
+
+for (l in 1:9){
+  for (i in 1:trials){
+    option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[l], sqrt(sigma))
+  }
+  print(periods_to_maturity[l])
+  option_mean_25 = append(option_mean_25, mean(option_vals))
+  newsd = sd(option_vals)/(sqrt(trials))
+  option_sd_25 = append(option_sd_25,newsd)
+}
+
+## now this is for stock prices at 50
+
+option_vals = rep(NA, trials)
+newmean = c()
+newsd = c()
+option_mean_50 = c()
+option_sd_50 = c()
+for (l in 1:9){
+  for (i in 1:trials){
+    option_vals[i] = generate_option_val(stock_prices[2], r, periods_to_maturity[l],sqrt(sigma))
+  }
+  option_mean_50 = append(option_mean_50,mean(option_vals))
+  newsd = sd(option_vals)/(sqrt(trials))
+  option_sd_50 = append(option_sd_50,newsd)
+}
+
+
+## now this is for stock prices at 75
+option_vals = rep(NA, trials)
+newmean = c()
+newsd = c()
+option_mean_75 = c()
+option_sd_75 = c()
+for (l in 1:9){
+  for (i in 1:trials){
+    option_vals[i] = generate_option_val(stock_prices[3], r, periods_to_maturity[l],sqrt(sigma))
+  }
+  option_mean_75 = append(option_mean_75,mean(option_vals))
+  newsd = sd(option_vals)/(sqrt(trials))
+  option_sd_75 = append(option_sd_75,newsd)
+}
+
+
+
+df_25 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_25, Standard_deviation=option_sd_25, lower_95_CI = option_mean_25 - 2*option_sd_25, upper_95_CI = option_mean_25 + 2*option_sd_25)
+df_25 = round(df_25, 4)
+df_25
+
+df_50 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_50, Standard_deviation=option_sd_50, lower_95_CI = option_mean_50 - 2*option_sd_50, upper_95_CI = option_mean_50 + 2*option_sd_50)
+df_50 = round(df_50, 4)
+df_50
+
+df_75 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_75,Standard_deviation=option_sd_75, lower_95_CI = option_mean_75 - 2*option_sd_75, upper_95_CI = option_mean_75 + 2*option_sd_75)
+df_75 = round(df_75, 4)
+df_75
+```
 
 
 
