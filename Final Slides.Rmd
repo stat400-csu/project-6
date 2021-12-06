@@ -45,6 +45,10 @@ options
   - The more likely something is to occur, the more expensive an option for that event
   - The less time to maturity, the less valuable the option 
   
+## European vs American Options
+
+
+  
 ## Purpose of the Paper
 
 - To show that Monte Carlo simulations provide a method to obtaining numerical solutions to option valuation problems
