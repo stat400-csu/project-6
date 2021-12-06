@@ -14,6 +14,7 @@ library(tidyverse)
 library(rmarkdown)
 library(ggplot2)
 library(dbplyr)
+set.seed(42)
 ```
 
 $S_t$ = current stock price at time t    
