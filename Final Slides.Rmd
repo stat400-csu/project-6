@@ -22,6 +22,17 @@ library(dbplyr)
 - Boyle is an Irish economist and a pioneer of quantitative finance
 - He is best known for his use of Monte Carlo methods in option pricing
 
+## Financial Terminology
+
+stocks
+risk free rate
+options
+
+## The LogNormal Distribution
+
+
+
+
 ## What are options?
 
 - Options are a very powerful and influential tool used heavily in financial markets
@@ -38,8 +49,17 @@ library(dbplyr)
 - Valuing options is essentially about determining the probabilities of future prices
   - The more likely something is to occur, the more expensive an option for that event
   - The less time to maturity, the less valuable the option 
+<<<<<<< HEAD
   - As time to maturity decreases on an option the value of the option will decrease as the delta variable for time decreases assuming value of the stock stays constant.
   - 
+=======
+  - Previous to these methods, there was no agreed upon method to determine option prices 
+  
+## European vs American Options
+
+
+
+
   
 ## Purpose of the Paper
 
@@ -47,14 +67,36 @@ library(dbplyr)
 - Two other methods exist and this method should be used as a supplement
 - Boyle's method is simple and flexible as it can be easily modified for different processes
 
-## Overview
+
+## Monte Carlo
+
+- g hat = max[St - E, 0]
+- f(y) = lognormal distribution
+- g(y) = result we get for final stock price
+  - random variable because we include x tilda
+
+
+## Black Scholes Model
+
+- How do we find St
+
+
+
+## Method Overview
 
 - Method uses the fact that the distribution of terminal stock prices is determined by the process generating future stock price movements
-- 
 
 
-## Slide with R Output
+## How it works
 
+
+
+
+## Simulation
+
+
+
+<<<<<<< HEAD
 ```{r functions, include=FALSE}
 #Back group code this should be include= False
 
@@ -186,13 +228,17 @@ df_75
 
 ```
 
-## Slide with Plot
 
+
+<<<<<<< HEAD
 ```{r tables}
 df_25
 df_50
 df_75
 ```
+
+
+
 
 
 ```{r plots}
