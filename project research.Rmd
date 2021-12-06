@@ -198,15 +198,15 @@ for (l in 1:9){
 
 periods_to_maturity =c(2,4,6,8,10,12,14,16,18)
 
-df_25 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_25, Standard_deviation=option_sd_25, lower_95_CI = option_mean_25 - 2*sd(option_mean_25)/sqrt(trials), upper_95_CI = option_mean_25 + 2*sd(option_mean_25)/sqrt(trials))
+df_25 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_25, Standard_deviation=option_sd_25, lower_95_CI = option_mean_25 - 2*option_sd_25, upper_95_CI = option_mean_25 + 2*option_sd_25)
 df_25 = round(df_25, 4)
 df_25
 
-df_50 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_50, Standard_deviation=option_sd_50, lower_95_CI = option_mean_50 - 2*sd(option_mean_50)/sqrt(trials), upper_95_CI = option_mean_50 + 2*sd(option_mean_50)/sqrt(trials))
+df_50 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_50, Standard_deviation=option_sd_50, lower_95_CI = option_mean_50 - 2*option_sd_50, upper_95_CI = option_mean_50 + 2*option_sd_50)
 df_50 = round(df_50, 4)
 df_50
 
-df_75 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_75,Standard_deviation=option_sd_75, lower_95_CI = option_mean_75 - 2*sd(option_mean_75)/sqrt(trials), upper_95_CI = option_mean_75 + 2*sd(option_mean_75)/sqrt(trials))
+df_75 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_75,Standard_deviation=option_sd_75, lower_95_CI = option_mean_75 - 2*option_sd_75, upper_95_CI = option_mean_75 + 2*option_sd_75)
 df_75 = round(df_75, 4)
 df_75
 ```
@@ -224,14 +224,14 @@ Each estimate was obtained using 5000 trials where each trial corresponds to a p
 ```{r}
 ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) + 
   geom_point()+
-  xlab("Number of periods to maturity")+
+  xlab("Number of Periods to Maturity")+
   ylab("Option values by Crude Monte Carlo")+
   ggtitle("Scatter plot of values of options by period to maturity of at stock price of 75")
 
 
 ggplot(df_50, aes(x=Periods_til_maturity, y=Option_values)) + 
   geom_point()+
-  xlab("Number of periods to maturity")+
+  xlab("Number of Periods to Maturity")+
   ylab("Option values by Crude Monte Carlo")+
   ggtitle("Scatter plot of values of options by period to maturity of at stock price of 50")
 
@@ -245,8 +245,27 @@ ggplot(df_25, aes(x=Periods_til_maturity, y=Option_values)) +
 ```
 
 
-  
-  
+```{r warning = FALSE}
+ggplot(df_25, aes(x=Periods_til_maturity, y=Option_values)) + 
+  geom_point()+ geom_line()+
+  geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
+  xlab("Number of Periods to Maturity")+ ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Options at Stock Price of 25")
+
+ggplot(df_50, aes(x=Periods_til_maturity, y=Option_values)) + 
+  geom_point() + geom_line()+
+  geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
+  xlab("Number of Periods to Maturity")+
+  ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Options at Stock Price of 50")
+
+ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) + 
+  geom_point() + geom_line() +
+  geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
+  xlab("Number of Periods to Maturity")+ ylab("Option values by Crude Monte Carlo") +
+  ggtitle("Options at Stock Price of 75")
+
+```
   
   
   
