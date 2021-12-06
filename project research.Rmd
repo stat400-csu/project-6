@@ -243,6 +243,8 @@ ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) +
   ggtitle("Scatter plot of values of options by period to maturity of at stock price of 75")
 
 ```
+
+
 ```{r warning=FALSE}
 ggplot(df_25, aes(x=Periods_til_maturity, y=Option_values)) + 
   geom_point()+ geom_line()+
