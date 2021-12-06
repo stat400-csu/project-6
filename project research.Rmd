@@ -55,8 +55,8 @@ sigma_squared = 0.025
 dividend = 0.25
 
 #chosen from October 2021, but others can be chosen to try to match historical data
-yield_points = c(.09,.1,.11,.16,.36)
-inflation_rate = 0.062
+yield_points = c(.06,.1,.11,.16,.36)
+inflation_rate = 0.069
 
 #rate to be used to evaluate the present day value of an investment
 risk_free_rate = function(inflation_rate, period_to_maturity){
@@ -88,7 +88,7 @@ generate_option_val = function(stock_price, r, period_to_maturity, sigma){
 #simulation looking at the case of 2 quarters to maturity and a stock price of 25 matching
 option_vals = rep(NA, trials)
 for (i in 1:trials){
-  option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[1],sqrt(sigma_squared))
+  option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[1], sqrt(sigma_squared))
 }
 print(paste("option value: ",mean(option_vals)))
 print(paste("se of estimate: ",sd(option_vals)/(sqrt(trials))))
@@ -103,6 +103,39 @@ The simulation above was computed using the selected values of the underlying pa
 Monte Carlo estimates of options are calculated with even maturities 2 to 20       
 Each estimate was obtained using 5000 trials where each trial corresponds to a possible stock path    
   
+  
+$S_t$ = current stock price at time t    
+r = risk free rate per quarter compounded continuously    
+$\sigma^2$ = the (assumed constant) variance rate per quarter on the underlying stock    
+$D_t$ = the dividend payable at time t   
+E = exercise price of the option    
+T = exercise date of the option  
+  
+Apply to EPD Options:
+Current Price: 453.42
+E = 455
+periods_to_maturity_epd = c(2,4)
+dividend = 1.4281
+June = 27.9, Jan = 39.35
+```{r}
+trials = 5000
+periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
+stock_prices = c(25, 50, 75)
+stockExerciseRatio = c(0.5, 1, 1.25)
+E = 455
+r = 0.015
+sigma_squared = 0.025
+dividend = 1.4281
+epd = c()
+
+for (i in 1:trials){
+  epd[i] = generate_option_val(453.42, r, periods_to_maturity_epd[1], sqrt(sigma_squared))
+}
+print(paste("option value: ",mean(epd)))
+print(paste("se of estimate: ",sd(epd)/(sqrt(trials))))
+
+```
+
 
 
 
