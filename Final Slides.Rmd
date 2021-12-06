@@ -28,6 +28,10 @@ stocks
 risk free rate
 options
 
+## The LogNormal Distribution
+
+
+
 
 ## What are options?
 
@@ -50,15 +54,13 @@ options
 
 
 
-## The LogNormal Distribution
-
-
   
 ## Purpose of the Paper
 
 - To show that Monte Carlo simulations provide a method to obtaining numerical solutions to option valuation problems
 - Two other methods exist and this method should be used as a supplement
 - Boyle's method is simple and flexible as it can be easily modified for different processes
+
 
 ## Monte Carlo
 
@@ -70,10 +72,16 @@ options
 
 ## Black Scholes Model
 
+- How do we find St
 
 
 
-## Our Method
+## Method Overview
+
+- Method uses the fact that the distribution of terminal stock prices is determined by the process generating future stock price movements
+
+
+## How it works
 
 
 
@@ -82,11 +90,6 @@ options
 
 
 
-
-## Overview
-
-- Method uses the fact that the distribution of terminal stock prices is determined by the process generating future stock price movements
-- 
 
 
 
