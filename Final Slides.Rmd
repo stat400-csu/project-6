@@ -188,12 +188,34 @@ df_75
 
 ## Slide with Plot
 
-```{r pressure}
+```{r tables}
 df_25
 df_50
 df_75
 ```
 
+
+```{r plots}
+ggplot(df_75, aes(x=Periods_till_maturity, y=Option_values)) + 
+  geom_point()+
+  xlab("Number of periods to maturity")+
+  ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Scatter plot of values of options by period to maturity of at stock price of 75")
+
+
+ggplot(df_50, aes(x=Periods_till_maturity, y=Option_values)) + 
+  geom_point()+
+  xlab("Number of periods to maturity")+
+  ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Scatter plot of values of options by period to maturity of at stock price of 50")
+
+
+ggplot(df_25, aes(x=Periods_till_maturity, y=Option_values)) + 
+  geom_point()+
+  xlab("Number of periods to maturity")+
+  ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Scatter plot of values of options by period to maturity of at stock price of 25")
+```
 
 
 
