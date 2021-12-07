@@ -101,7 +101,9 @@ ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_ba
 - The paper that we replicated derived their methods from the Black-Scholes Model
 
 C = $S_t*N(d_1)-K_e^{-rt}*N(d_2)$
+
 $d_1 = \frac{ln({S_t/K})+(r+\sigma^2/2)*t}{\sigma_s\sqrt{t}}$
+
 $d_2=d_1-\sigma_s*\sqrt{t}$
 
 ## Black-Scholes Model Cont.
