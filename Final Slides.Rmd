@@ -86,17 +86,9 @@ ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_ba
 - Boyle's method is simple and flexible as it can be easily modified for different processes
 
 
-## Monte Carlo
-
-- $\hat{g}$ = MAX[$S_{t+1}$ - E, 0]
-- $f(y)$ = normal distribution
-- $g(y)$ = result we get for final stock price
-  - random variable because we include $\tilde{x}$
-
-
 ## Black-Scholes Model
 
-- The Black-Scholems model is the basis for the model from this paper
+- The Black-Scholes model is the basis for the model from this paper
 - Developed in 1973 it is one of the best methods for pricing an option contract
 - The paper that we replicated derived their methods from the Black-Scholes Model
 
@@ -117,13 +109,22 @@ $d_2=d_1-\sigma_s*\sqrt{t}$
 - This model assumes that variability remains constant.
 
 
-
 ## Method Overview
 
 - Our Monte Carlo method is used to obtain estimates of option values on dividend paying stocks for European Call options
 - Method uses the fact that the distribution of terminal stock prices is determined by the process generating future stock price movements
 - This process can then be simulated to generate a series of stock price trajectories
 - The series determines a set of terminal stock values which can be used to obtain an estimate of the option value
+
+
+## Monte Carlo
+
+- $\int f(y)g(y)$
+- $\hat{g}$ = MAX[$S_{T+1}$ - E, 0]
+- $f(y)$ = normal distribution
+- $g(y)$ = result we get for final option price
+  - random variable because we include $\tilde{x}$
+
 
 ## How it works
 
