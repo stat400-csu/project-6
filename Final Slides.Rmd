@@ -123,7 +123,7 @@ $d_2=d_1-\sigma_s*\sqrt{t}$
 
 - $\int f(y)g(y)$
 - $\hat{g}$ = MAX[$S_{T+1}$ - E, 0]
-- $f(y)$ = normal distribution
+- $f(y)$ = lognormal distribution
 - $g(y)$ = result we get for final option price
   - random variable because we include $\tilde{x}$
 
