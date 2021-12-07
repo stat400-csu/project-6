@@ -3187,7 +3187,6 @@ slide:not(.current) .plotly.html-widget{
 <ul>
 <li>The more likely something is to occur, the more expensive an option for that event</li>
 <li>The less time to maturity, the less valuable the option</li>
-<li>As time to maturity decreases on an option the value of the option will decrease as the delta variable for time decreases assuming value of the stock stays constant.</li>
 <li>Previous to these methods, there was no agreed upon method to determine option prices</li>
 </ul></li>
 </ul>
@@ -3251,7 +3250,7 @@ slide:not(.current) .plotly.html-widget{
 <ul>
 <li>\(\int f(y)g(y)\)</li>
 <li>\(\hat{g}\) = MAX[\(S_{T+1}\) - E, 0]</li>
-<li>\(f(y)\) = normal distribution</li>
+<li>\(f(y)\) = lognormal distribution</li>
 <li>\(g(y)\) = result we get for final option price
 
 <ul>
@@ -3281,7 +3280,7 @@ slide:not(.current) .plotly.html-widget{
 <li>If \(S_{t+1}\) is greater than \(D_{t+1}\), then (\(S_{t+1}\) - \(D_{t+1}\)) is used as the initial value at the start of the second period
 
 <ul>
-<li>The procedure is continued until a value of \(S_t\) is obtained<br/></li>
+<li>The procedure is continued until a value of \(S_T\) is obtained<br/></li>
 </ul></li>
 <li>If at some stage \(S_{t+m} (m = 1,2,... (T-t-1)\) is less than or equal to the corresponding dividend payment \(D_{t+m}\) the process stops
 
@@ -3293,7 +3292,7 @@ slide:not(.current) .plotly.html-widget{
 </article></slide><slide class=""><hgroup><h2>Simulation</h2></hgroup><article  id="simulation-1">
 
 <ul>
-<li>A series of simulation trials is carried out in this way and the expected value of \(MAX[S_t-E, 0]\) is found
+<li>A series of simulation trials is carried out in this way and the expected value of \(MAX[S_T-E, 0]\) is found
 
 <ul>
 <li>This quantity is then discounted as the risk-free rate to yield an estimate of the option value \(\hat{g}\)</li>

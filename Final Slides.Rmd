@@ -66,7 +66,6 @@ ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_ba
 - Valuing options is essentially about determining the probabilities of future prices
   - The more likely something is to occur, the more expensive an option for that event
   - The less time to maturity, the less valuable the option 
-  - As time to maturity decreases on an option the value of the option will decrease as the delta variable for time decreases assuming value of the stock stays constant.
   - Previous to these methods, there was no agreed upon method to determine option prices 
   
 ## European vs American Options
@@ -144,14 +143,14 @@ $d_2=d_1-\sigma_s*\sqrt{t}$
 
 - To set up the simulation method in this case, a value of $S_{t+1}$ is generated
 - If $S_{t+1}$ is greater than $D_{t+1}$, then ($S_{t+1}$ - $D_{t+1}$) is used as the initial value at the start of the second period  
-  - The procedure is continued until a value of $S_t$ is obtained   
+  - The procedure is continued until a value of $S_T$ is obtained   
 - If at some stage $S_{t+m} (m = 1,2,... (T-t-1)$ is less than or equal to the corresponding dividend payment $D_{t+m}$ the process stops    
   - In this case, another simulation trial is started again from time t   
   
   
 ## Simulation 
 
-- A series of simulation trials is carried out in this way and the expected value of $MAX[S_t-E, 0]$ is found   
+- A series of simulation trials is carried out in this way and the expected value of $MAX[S_T-E, 0]$ is found   
   - This quantity is then discounted as the risk-free rate to yield an estimate of the option value $\hat{g}$
 
 ## Simulation Code    
