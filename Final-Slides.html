@@ -3242,7 +3242,7 @@ slide:not(.current) .plotly.html-widget{
 
 <ul>
 <li>To set up the simulation method in this case, a value of \(S_{t+1}\) is generated</li>
-<li>If this value is greater than \(D_{t+1}\), then (\(S_{t+1}\) - \(D_{t+1}\)) is used as the initial value at the start of the second period
+<li>If \(S_{t+1}\) is greater than \(D_{t+1}\), then (\(S_{t+1}\) - \(D_{t+1}\)) is used as the initial value at the start of the second period
 
 <ul>
 <li>The procedure is continued until a value of \(S_t\) is obtained<br/></li>
@@ -3250,14 +3250,21 @@ slide:not(.current) .plotly.html-widget{
 <li>If at some stage \(S_{t+m} (m = 1,2,... (T-t-1)\) is less than or equal to the corresponding dividend payment \(D_{t+m}\) the process stops
 
 <ul>
-<li>In this case, another simulation trial is started again from time t<br/></li>
+<li>In this case, another simulation trial is started again from time t</li>
 </ul></li>
+</ul>
+
+</article></slide><slide class=""><hgroup><h2>Simulation</h2></hgroup><article  id="simulation-1">
+
+<ul>
 <li>A series of simulation trials is carried out in this way and the expected value of \(MAX[S_r-E, 0]\) is found
 
 <ul>
 <li>This quantity is then discounted as the risk-free rate to yield an estimate of the option value \(\hat{g}\)</li>
 </ul></li>
 </ul>
+
+</article></slide><slide class=""><hgroup><h2>Simulation Code</h2></hgroup><article  id="simulation-code">
 
 </article></slide><slide class=""><hgroup><h2>Stock Price = $25</h2></hgroup><article  id="stock-price-25">
 
