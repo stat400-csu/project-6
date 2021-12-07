@@ -68,7 +68,7 @@ ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_ba
   
 ## European vs American Options
 
-There are two types of financial options: European and American
+- There are two types of financial options: European and American
 - 
 
   
@@ -82,6 +82,7 @@ There are two types of financial options: European and American
 
 ## Monte Carlo
 
+- THIS NEEDS MORE
 - $\hat{g}$ = MAX[$S_{t+1}$ - E, 0]
 - $f(y)$ = lognormal distribution
 - $g(y)$ = result we get for final stock price
@@ -103,14 +104,27 @@ There are two types of financial options: European and American
 
 ## How it works
 
+- $S_t$ = current stock price at time t    
+- r = risk free rate per quarter compounded continuously    
+- $\sigma^2$ = the (assumed constant) variance rate per quarter on the underlying stock    
+- $D_t$ = the dividend payable at time t   
+- E = exercise price of the option    
 
+- Using the properties of the lognormal distribution, we can generate the distribution of stock prices one period hence by forming the random variable, 
+  - $S_{t+1} = S_t*exp[r - \sigma^2/2 + \sigma*\tilde{x}]$,     $\tilde{x}$ is $N(0, 1)$
 
 
 ## Simulation
 
+- To set up the simulation method in this case, a value of $S_{t+1}$ is generated
+- If $S_{t+1}$ is greater than $D_{t+1}$, then ($S_{t+1}$ - $D_{t+1}$) is used as the initial value at the start of the second period  
+  - The procedure is continued until a value of $S_t$ is obtained   
+- If at some stage $S_{t+m} (m = 1,2,... (T-t-1)$ is less than or equal to the corresponding dividend payment $D_{t+m}$ the process stops    
+  - In this case, another simulation trial is started again from time t   
+- A series of simulation trials is carried out in this way and the expected value of $MAX[S_r-E, 0]$ is found   
+  - This quantity is then discounted as the risk-free rate to yield an estimate of the option value $\hat{g}$
 
-
-
+## Simulation Code    
 
 
 ```{r echo = FALSE}

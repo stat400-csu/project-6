@@ -3185,7 +3185,10 @@ slide:not(.current) .plotly.html-widget{
 
 </article></slide><slide class=""><hgroup><h2>European vs American Options</h2></hgroup><article  id="european-vs-american-options">
 
-</article></slide><slide class=""><hgroup><h2>There are two types of financial options: European and American</h2></hgroup><article  id="there-are-two-types-of-financial-options-european-and-american">
+<ul>
+<li>There are two types of financial options: European and American</li>
+<li></li>
+</ul>
 
 </article></slide><slide class=""><hgroup><h2>Purpose of the Paper</h2></hgroup><article  id="purpose-of-the-paper">
 
@@ -3199,6 +3202,7 @@ slide:not(.current) .plotly.html-widget{
 </article></slide><slide class=""><hgroup><h2>Monte Carlo</h2></hgroup><article  id="monte-carlo">
 
 <ul>
+<li>THIS NEEDS MORE</li>
 <li>\(\hat{g}\) = MAX[\(S_{t+1}\) - E, 0]</li>
 <li>\(f(y)\) = lognormal distribution</li>
 <li>\(g(y)\) = result we get for final stock price
@@ -3221,7 +3225,39 @@ slide:not(.current) .plotly.html-widget{
 
 </article></slide><slide class=""><hgroup><h2>How it works</h2></hgroup><article  id="how-it-works">
 
+<ul>
+<li><p>\(S_t\) = current stock price at time t<br/></p></li>
+<li><p>r = risk free rate per quarter compounded continuously<br/></p></li>
+<li><p>\(\sigma^2\) = the (assumed constant) variance rate per quarter on the underlying stock<br/></p></li>
+<li><p>\(D_t\) = the dividend payable at time t<br/></p></li>
+<li><p>E = exercise price of the option</p></li>
+<li><p>Using the properties of the lognormal distribution, we can generate the distribution of stock prices one period hence by forming the random variable,</p>
+
+<ul>
+<li>\(S_{t+1} = S_t*exp[r - \sigma^2/2 + \sigma*\tilde{x}]\), \(\tilde{x}\) is \(N(0, 1)\)</li>
+</ul></li>
+</ul>
+
 </article></slide><slide class=""><hgroup><h2>Simulation</h2></hgroup><article  id="simulation">
+
+<ul>
+<li>To set up the simulation method in this case, a value of \(S_{t+1}\) is generated</li>
+<li>If this value is greater than \(D_{t+1}\), then (\(S_{t+1}\) - \(D_{t+1}\)) is used as the initial value at the start of the second period
+
+<ul>
+<li>The procedure is continued until a value of \(S_t\) is obtained<br/></li>
+</ul></li>
+<li>If at some stage \(S_{t+m} (m = 1,2,... (T-t-1)\) is less than or equal to the corresponding dividend payment \(D_{t+m}\) the process stops
+
+<ul>
+<li>In this case, another simulation trial is started again from time t<br/></li>
+</ul></li>
+<li>A series of simulation trials is carried out in this way and the expected value of \(MAX[S_r-E, 0]\) is found
+
+<ul>
+<li>This quantity is then discounted as the risk-free rate to yield an estimate of the option value \(\hat{g}\)</li>
+</ul></li>
+</ul>
 
 </article></slide><slide class=""><hgroup><h2>Stock Price = $25</h2></hgroup><article  id="stock-price-25">
 
