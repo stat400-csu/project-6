@@ -89,7 +89,7 @@ ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_ba
 ## Monte Carlo
 
 - $\hat{g}$ = MAX[$S_{t+1}$ - E, 0]
-- $f(y)$ = lognormal distribution
+- $f(y)$ = normal distribution
 - $g(y)$ = result we get for final stock price
   - random variable because we include $\tilde{x}$
 
