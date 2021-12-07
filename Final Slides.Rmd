@@ -31,7 +31,7 @@ library(knitr)
 - Inflation Rate: rate at which the value of a currency is falling and the general level of prices for goods and services is rising
 - Treasury Yield: yield of a US Treasury Bond matching investment duration
 - Risk Free Rate: Represents the interest an investor would expect from a risk-free investment over a specific time
-  - RFr = Treasury Yield - Inflation Rate
+  - RFr = Inflation Rate - Treasury Yield
   
 ## The LogNormal Distribution
 
