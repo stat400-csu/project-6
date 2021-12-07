@@ -32,9 +32,6 @@ library(knitr)
 - Risk Free Rate: Represents the interest an investor would expect from a risk-free investment over a specific time
   - RFr = Treasury Yield - Inflation Rate
   
-## The LogNormal Distribution
-
-
 
 
 ## The LogNormal Distribution
@@ -56,20 +53,25 @@ ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_ba
   - Derivative, price is linked to price of underlying asset
 - Options are more risky than common stock as the price moves faster
 - Investors use options for income, to hedge risk and to speculate about future market movements
+- When investors sell an underlying stock as an option they receive a premium up front for selling the contract aka the option 
 
 ## How do options work?
 
 - A single options contract represents 100 shares of the underlying asset it is representing
-- Contract gives the buyer the right to buy the underlying asset at a specific price on a certain date
+- Contract gives the buyer the right to buy the underlying asset at a specific price on or by a certain date
 - Valuing options is essentially about determining the probabilities of future prices
   - The more likely something is to occur, the more expensive an option for that event
   - The less time to maturity, the less valuable the option 
+  - As time to maturity decreases on an option the value of the option will decrease as the delta variable for time decreases assuming value of the stock stays constant.
   - Previous to these methods, there was no agreed upon method to determine option prices 
   
 ## European vs American Options
 
 - There are two types of financial options: European and American
-- 
+- The main thing to remember between the two, American options can be exercised at any time
+- European options can only be exercised at the time of expiration
+- Again a Contract gives the buyer the right to buy the underlying asset at a specific price on or by a certain date and exercising the contract just means you finish the translation and buy the stocks.
+
 
   
 ## Purpose of the Paper
@@ -89,9 +91,27 @@ ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_ba
   - random variable because we include x tilda
 
 
-## Black Scholes Model
+## Black-Scholes Model
 
+- The Black-Scholems model is the basis for the model from this paper
+- Developed in 1973 it is one of the best methods for pricing an option contract
+- The paper that we replicated derived their methods from the Black-Scholes Model
 
+C = $S_t*N(d_1)-K_e^{-rt}*N(d_2)$
+$d_1 = \frac{ln({S_t/K})+(r+\sigma^2/2)*t}{\sigma_s\sqrt{t}}$
+$d_2=d_1-\sigma_s*\sqrt{t}$
+
+## Black-Scholes Model Cont.
+
+- C = call option price
+- S = Current underling stock price
+- K = Strike price
+- r = Risk-free interest rate
+- t = Time to maturity
+- N = A normal distribution
+
+- This model only prices European options since again American options can be exercised before expiration date causing for more variability.
+- This model assumes that variability remains constant.
 
 
 
@@ -321,7 +341,23 @@ ggplot() +
 
 ## Stock Price = $50
 
+
+
+```{r fig.height= 5}
+df_50 %>% kable()
+
+```
+
+
+
+## Stock Price = $50
+
+
+
 ```{r}
+
+
+
 ggplot(df_50, aes(x=Periods_til_maturity, y=Option_values)) + 
   geom_point() + geom_line()+
   geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
@@ -334,7 +370,21 @@ ggplot(df_50, aes(x=Periods_til_maturity, y=Option_values)) +
 
 ## Stock Price = $75
 
+
+
+```{r fig.height= 5}
+df_75 %>% kable()
+
+```
+
+
+## Stock Price = $75
+
+
 ```{r}
+
+
+
 ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) + 
   geom_point() + geom_line() +
   geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
@@ -350,13 +400,11 @@ ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) +
 
 
 
-
-
-
-
-
-
-
-
 ## References
 https://www.investopedia.com/options-basics-tutorial-4583012
+
+https://www.investopedia.com/terms/r/risk-freerate.asp
+
+https://www.investopedia.com/terms/b/blackscholes.asp
+
+https://www.in2013dollars.com/UK-inflation-rate-in-1977
