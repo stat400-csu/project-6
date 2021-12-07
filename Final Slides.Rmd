@@ -27,22 +27,26 @@ library(knitr)
 
 - Stock: security ownership in a particular company 
   - ex: common stock of Apple is ~ $165
+- Dividend: A sum of money paid regularly by a company to its shareholders
 - Inflation Rate: rate at which the value of a currency is falling and the general level of prices for goods and services is rising
 - Treasury Yield: yield of a US Treasury Bond matching investment duration
 - Risk Free Rate: Represents the interest an investor would expect from a risk-free investment over a specific time
   - RFr = Treasury Yield - Inflation Rate
   
+## The LogNormal Distribution
 
+- Distribution of logarithmic values from a related normal distribution
+- Allow for only positive variables whereas the normal distribution can allow for negative variables
+- More useful in finance because the log normal curve can better identify the compounding return a stock can achieve over a long period of time
 
 ## The LogNormal Distribution
 
 ```{r warning=FALSE, echo = FALSE}
-sample1 <- rlnorm(n=1e4, mean=0, sd=1)
+sample1 <- rnorm(n=1e4, mean=1, sd=1)
 sample2 <- rlnorm(n=1e4, mean=1, sd=1)
-sample3 <- rlnorm(n=1e4, mean=2, sd=1)
-lognorms <- data.frame(Value = c(sample1, sample2, sample3), x_bar = factor(c(rep(0, length(sample1)), rep(1, length(sample2)), rep(2, length(sample3)))))
+lognorms <- data.frame(Value = c(sample1, sample2), x_bar = factor(c(rep("Normal", length(sample1)), rep("LogNormal", length(sample2)))))
 ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_bar)) +
-  geom_density(adjust = 1.5, alpha = .4) + scale_x_continuous(limits =c(0, 25)) + ggtitle("LogNormal Distributions")
+  geom_density(adjust = 1.5, alpha = .4) + scale_x_continuous(limits =c(0, 10)) + ggtitle("LogNormal Distributions")
 ```
 
 
@@ -84,11 +88,10 @@ ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_ba
 
 ## Monte Carlo
 
-- THIS NEEDS MORE
 - $\hat{g}$ = MAX[$S_{t+1}$ - E, 0]
 - $f(y)$ = lognormal distribution
 - $g(y)$ = result we get for final stock price
-  - random variable because we include x tilda
+  - random variable because we include $\tilde{x}$
 
 
 ## Black-Scholes Model
@@ -150,6 +153,15 @@ $d_2=d_1-\sigma_s*\sqrt{t}$
 
 ## Simulation Code    
 
+- Trials = 5000
+- Periods to Maturity = c(2,4,6,8,10,12,14,16,18,20)
+- stock_prices = c(25, 50, 75)
+- Exercise Price = 50
+- Risk Free Rate = 0.015
+- $\sigma^2$ = 0.025 
+- Dividend = 0.25
+
+
 ```{r echo = FALSE}
 trials = 5000
 periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
@@ -162,7 +174,6 @@ dividend = 0.25
 
 #chosen from October 2021, but others can be chosen to try to match historical data
 yield_points = c(.09,.1,.11,.16,.36)
-
 inflation_rate = 0.062
 
 #rate to be used to evaluate the present day value of an investment
@@ -341,23 +352,15 @@ ggplot() +
 
 ## Stock Price = $50
 
-
-
 ```{r fig.height= 5}
 df_50 %>% kable()
 
 ```
 
 
-
 ## Stock Price = $50
 
-
-
 ```{r}
-
-
-
 ggplot(df_50, aes(x=Periods_til_maturity, y=Option_values)) + 
   geom_point() + geom_line()+
   geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
@@ -382,9 +385,6 @@ df_75 %>% kable()
 
 
 ```{r}
-
-
-
 ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) + 
   geom_point() + geom_line() +
   geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
@@ -396,6 +396,7 @@ ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) +
 ```
 
 
+## Questions?
 
 
 
