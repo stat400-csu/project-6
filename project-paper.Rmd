@@ -229,9 +229,19 @@ df_75 = round(df_75, 4)
 
 
 
-# Results       
-Shown below are the results for our simulation with the following values:
+# Results
 
+Shown below are the results for our simulation with the following values:   
+
+- Trials = 5000
+- Periods to Maturity = 2, 4, 6, 8, 10, 12, 14, 16, 18, 20
+- stock_prices = 25, 50, 75
+- Exercise Price = 50
+- Risk Free Rate = 0.015
+- $\sigma^2$ = 0.025 
+- Dividend = 0.25
+
+These values are the same as the simulations described in the paper.  
 
 ## Stock Price = $25
 ```{r fig.height= 5}
@@ -261,11 +271,8 @@ ggplot() +
 
 ```
 
-
-
-
-
 ## Stock Price = $50
+
 ```{r}
 df_50 %>% kable()
 ```
@@ -282,10 +289,6 @@ ggplot(df_50, aes(x=Periods_til_maturity, y=Option_values)) +
   labs(caption = "Black = our simulated values
          Red = simulated values from paper")
 ```
-
-
-
-
 
 ## Stock Price = $75
 ```{r}
@@ -304,7 +307,8 @@ ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) +
          Red = simulated values from paper")
 ```
   
-  
+
+|   In each plot, there are clearly some differences between our simulations and the simulation results listed in the paper.  Around 1977, the time in which Boyle published his paper, the inflation rate around 7% and the treasury yield was around 8% and climbing.  These numbers are important because the final option price is discounted by the rate of the risk free rate, inflation rate - treasury.  Today, the inflation rate is around 6% and the treasury yield is around 2%.  
   
   
   
