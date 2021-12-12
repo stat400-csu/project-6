@@ -5,42 +5,304 @@ date: "`r Sys.Date()`"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE, message = FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.width = 5)
+knitr::opts_chunk$set(fig.height = 4)
+set.seed(400)
 library(tidyr)
 library(tidyverse)
 library(rmarkdown)
 library(ggplot2)
 library(dbplyr)
-library(tinytex)
+library(knitr)
 ```
 
-**Introduction:**   
-Monte Carlo integration is a statistical computing method used to approximate integrals based on random sampling.  Monte Carlo simulations are computer driven models that generate a large number of samples from a distribution that is characterized by the population of which the samples are being drawn from. The simulations achieve many results from the samples drawn and then averages those results to obtain a final estimate. These multidimensional simulations can then be used to model various outcomes that might be difficult otherwise with numerical integration.  These simulations can be used in many different areas and fields including finance, engineering, supply chain and many others.  
+# Introduction      
+|   Monte Carlo integration is a statistical computing method used to approximate integrals based on random sampling.  Monte Carlo simulations are computer driven models that generate a large number of samples from a distribution that is characterized by the population of which the samples are being drawn from. The simulations achieve many results from the samples drawn and then averages those results to obtain a final estimate. These multidimensional simulations can then be used to model various outcomes that might be difficult otherwise with numerical integration.  These simulations can be used in many different areas and fields including finance, engineering, supply chain and many others.          
   
-In order to apply what we have learned regarding Monte Carlo methods and simulations, our group was able to identify an article within statistical literature that applies Monte Carlo to financial options.  "Options: A Monte Carlo Approach" was published in 1977 by Phelim P. Boyle in the Journal of Financial Economics.  While the article is 44 years old, much of the paper can still be applied to today's financial markets and statistical approaches.  
+|   In order to apply what we have learned regarding Monte Carlo methods and simulations, our group was able to identify an article within statistical literature that applies Monte Carlo to financial options.  "Options: A Monte Carlo Approach" was published in 1977 by Phelim P. Boyle in the Journal of Financial Economics.  While the article is 44 years old, much of the paper can still be applied to today's financial markets and statistical approaches.         
   
-Financial options are a very powerful and influential tool used heavily in financial markets.  An option is a contract that is valued based on a different underlying asset or security like a common stock.  A single options contract represents 100 shares of the underlying asset it is representing.  Because they represent 100 shares of the underlying asset, options are more risky than common stock as the price of the option moves faster.  The piece of the paper we wish to replicate simulates the process of generating returns on the underlying assets and then deriving the value of the option.  
+|   Financial options are a very powerful and influential tool used heavily in financial markets.  An option is a contract that is valued based on a different underlying asset or security like a common stock.  A single options contract represents 100 shares of the underlying asset it is representing.  Because they represent 100 shares of the underlying asset, options are more risky than common stock as the price of the option moves faster.  The piece of the paper we wish to replicate simulates the process of generating returns on the underlying assets and then deriving the value of the option.     
 
-**Financial Terminology:**
-
-
-
-**History:**
-The purpose of Boyle's paper was to show that Monte Carlo simulations provide another option of calculating numerical solution to option valuation and option valuation problems.  A few other methods were introduced around the same time as Boyle's paper.  A paper by Black and Scholes in 1973 detailed how option values would be obtained when market equilibrium conditions exist and Cox and Ross in 1976 showed that the value of a European call option can be obtained by discounting the expected maturity value of the option at the risk free rate.  Boyle's Monte Carlo method is simpler and more flexible compared to the other methods as it can be changed and modified to use different processes that govern the underlying stock returns and can change depending on the stock.  This method is a good supplement to the other two methods detailed above and each method has it's own advantages and disadvantages.   
-
-
-**Methodology:**
-
-
-
-
-
-**Simulation and Results:**
+# Financial Terminology       
+|   In order to understand the wording and how our simulation works, first some financial terms need to be defined.  
+- Common Stock: security ownership in a particular company 
+  - ex: common stock of Apple is ~ $165
+- Dividend: A sum of money paid regularly by a company to its shareholders
+- Inflation Rate: rate at which the value of a currency is falling and the general level of which prices for goods and services is rising
+- Treasury Yield: yield of a US Treasury Bond matching investment duration
+- Risk Free Rate: represents the interest an investor would expect from a risk-free investment over a specific time
+  - RFr = Inflation Rate - Treasury Yield
+- LogNormal Distribution: distribution of logarithmic values from a related normal distribution
+  - Allow for only positive variables whereas the normal distribution can allow for negative variables
+  - More useful in finance because the log normal curve can better identify the compounding return a stock can achieve over a long period of time
+  - As shown in the plot above, the longer right tail of the LogNormal distribution can increase stock returns due to a larger compounding effect compared to a normal distribution. 
   
+```{r warning=FALSE, echo = FALSE, fig.height=4, fig.width=6, fig.show='hold'}
+sample1 <- rnorm(n=1e4, mean=1, sd=1)
+sample2 <- rlnorm(n=1e4, mean=1, sd=1)
+lognorms <- data.frame(Value = c(sample1, sample2), x_bar = factor(c(rep("Normal", length(sample1)), rep("LogNormal", length(sample2)))))
+ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_bar)) +
+  geom_density(adjust = 1.5, alpha = .4) + scale_x_continuous(limits =c(0, 10)) + ggtitle("LogNormal Distribution")
+```
+  
+  
+# Overview of Options    
+|   Options are a very powerful and influential tool used heavily in financial markets.  Investors and investment institutions, like hedge funds and asset managers, use options for income, to hedge risk and to speculate about future market movements.  Options are more risky than common stock as the price moves faster and fluctuates at a faster pace.  
+
+|   So, what is an options contract?  It is a contract that its value is based on an underlying asset or security like a common stock or bond.  It is the most common form of a derivative, meaning its price is linked to the price of another underlying asset.  A single options contract represents 100 shares of the underlying asset it is representing.  The contract gives the buyer the right to buy the underlying asset at a specific price on or by a certain date.  There are two types of financial options: European and American.  European options can only be exercised, or right to buy the underlying asset, at the time of expiration and American options can be exercised at any time.  Again, an options contract gives the buyer the right to buy the underlying asset at a specific price on or by a certain date and exercising the contract just means you finish the transaction and buy the underlying asset at the exercise price.    
+
+|   Valuing options is essentially about determining the probabilities of future prices for the underlying asset.  The more likely something is to occur, the more expensive an option for that event will be.  As the time to maturity, or time until the option expires, decreases, the less valuable the option will become.  Prior to the methods listed in this paper, there was no standard method for determining option prices.  
 
   
-  
+# History             
+|   The purpose of Boyle's paper was to show that Monte Carlo simulations provide another option of calculating numerical solution to option valuation and option valuation problems.  A few other methods were introduced around the same time as Boyle's paper.  A paper by Black and Scholes in 1973 detailed how option values would be obtained when market equilibrium conditions exist and Cox and Ross in 1976 showed that the value of a European call option can be obtained by discounting the expected maturity value of the option at the risk free rate.  Boyle's Monte Carlo method is simpler and more flexible compared to the other methods as it can be changed and modified to use different processes that govern the underlying stock returns and can change depending on the stock.  This method is a good supplement to the other two methods detailed above and each method has it's own advantages and disadvantages.   
+
+
+# Methodology   
+
+
+
+
+
+# Simulation    
+```{r echo = FALSE}
+trials = 5000
+periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
+stock_prices = c(25, 50, 75)
+stockExerciseRatio = c(0.5, 1, 1.25)
+E = 50
+r = 0.015
+sigma_squared = 0.025 
+dividend = 0.25
+
+#chosen from October 2021, but others can be chosen to try to match historical data
+yield_points = c(.09,.1,.11,.16,.36)
+inflation_rate = 0.062
+
+#rate to be used to evaluate the present day value of an investment
+risk_free_rate = function(inflation_rate, period_to_maturity){
+  quarters = c(2,4,8,12,20)
+  interpolate_yield_curve = approxfun(x = quarters, y = yield_points)
+  return(inflation_rate - interpolate_yield_curve(period_to_maturity))
+}
+
+
+# an individual evaluation of a trial for a single option valuation problem
+generate_option_val = function(stock_price, r, period_to_maturity, sigma){
+  x_tilda = rnorm(periods_to_maturity, mean = 0, sd = 1)
+  for (i in 1:period_to_maturity){
+    new_q_price = stock_price * exp((r - (sigma^2)/2) + sigma * x_tilda[i])
+    #case where trial needs to be restarted from price at quarter t rather than quarter 1(see p. 329 of Boyle(1977))
+    if (new_q_price -  dividend <= 0){
+      stock_price = generate_option_val(stock_price, r, period_to_maturity - i + 1, sigma)
+      break 
+    }
+    #case where we need to pay out dividends to evaluate new stock price
+    else{
+      stock_price = new_q_price - dividend
+    }
+  }
+  future_option_value = max(c(stock_price - E, 0))
+  return(future_option_value - risk_free_rate(inflation_rate,period_to_maturity)*future_option_value)
+}
+
+#simulation looking at the case of 2 quarters to maturity and a stock price of 25 matching
+option_vals = rep(NA, trials)
+for (i in 1:trials){
+  option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[1],sqrt(sigma_squared))
+}
+# print(paste("option value: ",mean(option_vals)))
+# print(paste("se of estimate: ",sd(option_vals)/(sqrt(trials))))
+```
+
+```{r echo = FALSE, tidy = TRUE}
+set.seed(400)
+trials = 5000
+periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
+stock_prices = c(25, 50, 75)
+stockExerciseRatio = c(0.5, 1, 1.5)
+E = 50
+r = 0.015
+sigma = 0.025 
+dividend = 0.25
+
+#chosen from October 2021, but others can be chosen to try to match historical data
+yield_points = c(.09,.1,.11,.16,.36)
+#yield_points = c(.04,.06,.9,.10,.14)
+#inflation_rate = .1585
+inflation_rate = 0.062
+
+#rate to be used to evaluate the present day value of an investment
+risk_free_rate = function(inflation_rate, periods_to_maturity){
+  quarters = c(2,4,8,12,20)
+  interpolate_yield_curve = approxfun(x = quarters, y = yield_points)
+  return(inflation_rate - interpolate_yield_curve(periods_to_maturity))
+}
+
+
+# an individual evaluation of a trial for a single option valuation problem
+generate_option_val = function(stock_price, r, periods_to_maturity, sigma){
+  x_tilda = rnorm(periods_to_maturity, mean = 0, sd = 1)
+  for (i in 1:periods_to_maturity){
+    new_q_price = stock_price * exp((r - (sigma^2)/2) + sigma * x_tilda[i])
+    #case where trial needs to be restarted from price at quarter t rather than quarter 1(see p. 329 of Boyle(1977))
+    if (new_q_price -  dividend <= 0){
+      stock_price = generate_option_val(stock_price, r, periods_to_maturity - i + 1, sigma)
+      break 
+    }
+    #case where we need to pay out dividends to evaluate new stock price
+    else{
+      stock_price = new_q_price - dividend
+    }
+  }
+  future_option_value = max(c(stock_price - E, 0))
+  return(future_option_value - risk_free_rate(inflation_rate,periods_to_maturity)*future_option_value)
+}
+
+#simulation looking at the case of 2 quarters to maturity and a stock price of 25 matching
+option_vals = rep(NA, trials)
+newmean = c()
+newsd = c()
+option_mean_25 = c()
+option_sd_25 = c()
+
+## need this to make variable option_vals again but empty so numbers dont add to each other
+option_vals = rep(NA, trials)
+
+for (l in 1:9){
+  for (i in 1:trials){
+    option_vals[i] = generate_option_val(stock_prices[1], r, periods_to_maturity[l],sqrt(sigma))
+  }
+  option_mean_25 = append(option_mean_25,mean(option_vals))
+  newsd = sd(option_vals)/(sqrt(trials))
+  option_sd_25 = append(option_sd_25,newsd)
+}
+
+## now this is for stock prices at 50
+
+option_vals = rep(NA, trials)
+newmean = c()
+newsd = c()
+option_mean_50 = c()
+option_sd_50 = c()
+for (l in 1:9){
+  for (i in 1:trials){
+    option_vals[i] = generate_option_val(stock_prices[2], r, periods_to_maturity[l],sqrt(sigma))
+  }
+  option_mean_50 = append(option_mean_50,mean(option_vals))
+  newsd = sd(option_vals)/(sqrt(trials))
+  option_sd_50 = append(option_sd_50,newsd)
+}
+
+
+## now this is for stock prices at 75
+option_vals = rep(NA, trials)
+newmean = c()
+newsd = c()
+option_mean_75 = c()
+option_sd_75 = c()
+for (l in 1:9){
+  for (i in 1:trials){
+    option_vals[i] = generate_option_val(stock_prices[3], r, periods_to_maturity[l], sqrt(sigma))
+  }
+  option_mean_75 = append(option_mean_75,mean(option_vals))
+  newsd = sd(option_vals)/(sqrt(trials))
+  option_sd_75 = append(option_sd_75,newsd)
+}
+
+periods_to_maturity =c(2,4,6,8,10,12,14,16,18)
+
+df_25 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_25, Standard_deviation=option_sd_25, lower_95_CI = option_mean_25 - 2*option_sd_25, upper_95_CI = option_mean_25 + 2*option_sd_25)
+df_25 = round(df_25, 4)
+
+df_50 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_50, Standard_deviation=option_sd_50, lower_95_CI = option_mean_50 - 2*option_sd_50, upper_95_CI = option_mean_50 + 2*option_sd_50)
+df_50 = round(df_50, 4)
+
+df_75 <- data.frame(Periods_til_maturity = periods_to_maturity, Option_values=option_mean_75,Standard_deviation=option_sd_75, lower_95_CI = option_mean_75 - 2*option_sd_75, upper_95_CI = option_mean_75 + 2*option_sd_75)
+df_75 = round(df_75, 4)
+
+```
+
+
+
+
+
+# Results       
+Shown below are the results for our simulation with the following values:
+
+
+## Stock Price = $25
+```{r fig.height= 5}
+df_25 %>% kable()
+```
+
+```{r warning = FALSE}
+real_values_25 = c(0.004, 0.087, 0.273, 0.539, 0.879, 1.202, 1.547, 1.897, 2.281)
+table1_25 = data.frame(x = periods_to_maturity, y = real_values_25)
+
+real_values_50 = c(5.121, 7.427, 9.247, 10.793, 11.923, 13.135, 14.281, 15.079, 15.945)
+table1_50 = data.frame(x = periods_to_maturity, y = real_values_50)
+
+real_values_75 = c(26.445, 28.250, 29.832, 31.257, 32.319, 33.491, 34.835, 35.503, 36.382)
+table1_75 = data.frame(x = periods_to_maturity, y = real_values_75)
+
+ggplot() + 
+  geom_point(aes(x=Periods_til_maturity, y=Option_values), df_25) + 
+  geom_line(aes(x=Periods_til_maturity, y=Option_values), df_25) +
+  geom_ribbon(aes(x=Periods_til_maturity, ymin = lower_95_CI, ymax = upper_95_CI), df_25, alpha = 0.3) + 
+  geom_point(aes(x = x, y = y), data = table1_25, color = "red", alpha = 0.5) +
+  geom_line(aes(x = x, y = y), data = table1_25, color = "red", alpha = 0.5) +
+  xlab("Number of Periods to Maturity")+ ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Options at Stock Price of 25") + 
+  labs(caption = "Black = our simulated values
+         Red = simulated values from paper")
+
+```
+
+
+
+
+
+## Stock Price = $50
+```{r}
+df_50 %>% kable()
+```
+
+```{r}
+ggplot(df_50, aes(x=Periods_til_maturity, y=Option_values)) + 
+  geom_point() + geom_line()+
+  geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
+  geom_point(aes(x = x, y = y), data = table1_50, color = "red", alpha = 0.5) +
+  geom_line(aes(x = x, y = y), data = table1_50, color = "red", alpha = 0.5) +
+  xlab("Number of Periods to Maturity")+
+  ylab("Option values by Crude Monte Carlo")+
+  ggtitle("Options at Stock Price of 50") +
+  labs(caption = "Black = our simulated values
+         Red = simulated values from paper")
+```
+
+
+
+
+
+## Stock Price = $75
+```{r}
+df_75 %>% kable()
+```
+
+```{r}
+ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) + 
+  geom_point() + geom_line() +
+  geom_ribbon(aes(ymin = lower_95_CI, ymax = upper_95_CI), alpha = 0.3) + 
+  geom_point(aes(x = x, y = y), data = table1_75, color = "red", alpha = 0.5) +
+  geom_line(aes(x = x, y = y), data = table1_75, color = "red", alpha = 0.5) +
+  xlab("Number of Periods to Maturity")+ ylab("Option values by Crude Monte Carlo") +
+  ggtitle("Options at Stock Price of 75") + 
+  labs(caption = "Black = our simulated values
+         Red = simulated values from paper")
+```
   
   
   
