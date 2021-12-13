@@ -308,7 +308,7 @@ ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) +
 ```
   
 
-|   In each plot, there are clearly some differences between our simulations and the simulation results listed in the paper.  Around 1977, the time in which Boyle published his paper, the inflation rate around 7% and the treasury yield was around 8% and climbing.  These numbers are important because the final option price is discounted by the rate of the risk free rate, inflation rate - treasury.  Today, the inflation rate is around 6% and the treasury yield is around 2%.  
+|   In each plot, there are clearly some differences between our simulations and the simulation results listed in the paper.  Around 1977, the time in which Boyle published his paper, the inflation rate around 7% and the treasury yield was around 8% and climbing.  These numbers are important because the final option price is discounted by the rate of the risk free rate, inflation rate - treasury.  Today, the inflation rate is around 6% and the treasury yield is around 2%.  The differences is these numbers, over a long period of time, can lead to bigger differences in our simulated values and the Boyle's simulated values.  
   
   
   
