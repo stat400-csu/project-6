@@ -29,15 +29,17 @@ library(knitr)
 |   In order to understand the wording and how our simulation works, first some financial terms need to be defined.  
 - Common Stock: security ownership in a particular company 
   - ex: common stock of Apple is ~ $165
-- Dividend: A sum of money paid regularly by a company to its shareholders
-- Inflation Rate: rate at which the value of a currency is falling and the general level of which prices for goods and services is rising
+- Dividend: A sum of money paid regularly by a company to its shareholders, its important to note that not all stock give dividends to the companies investors. Dividend's are usually used as motivation to get more people to invest in a company.
+- Inflation Rate: rate at which the value of a currency is falling and the general level of which prices for goods and services is rising. Inflation rate is a sign of economic growth and necessary to prevent stagflation. If interest-rates are too high this leads to hyper-inflation. The ideal intrastate for an optimal growing economy is around 2%
+- Strike Price: The set agreed price at which the underling stock in the contract can be bought or sold when it is exercised.
+- Option's Premium: the current market price of an option contract which is based on the stocks current value, strike price, inflation rate and risk free rate. The premium is what you pay someone to sell you an option contract. You are essentially paying someone else an upfront payment for them to take the risk of holding 100 shares of a stock for each contract.
 - Treasury Yield: yield of a US Treasury Bond matching investment duration
 - Risk Free Rate: represents the interest an investor would expect from a risk-free investment over a specific time
   - RFr = Inflation Rate - Treasury Yield
 - LogNormal Distribution: distribution of logarithmic values from a related normal distribution
   - Allow for only positive variables whereas the normal distribution can allow for negative variables
   - More useful in finance because the log normal curve can better identify the compounding return a stock can achieve over a long period of time
-  - As shown in the plot above, the longer right tail of the LogNormal distribution can increase stock returns due to a larger compounding effect compared to a normal distribution. 
+  - As shown in the plot below, the longer right tail of the LogNormal distribution can increase stock returns due to a larger compounding effect compared to a normal distribution. 
   
 ```{r warning=FALSE, echo = FALSE, fig.height=4, fig.width=6, fig.show='hold'}
 sample1 <- rnorm(n=1e4, mean=1, sd=1)
@@ -51,9 +53,9 @@ ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_ba
 # Overview of Options    
 |   Options are a very powerful and influential tool used heavily in financial markets.  Investors and investment institutions, like hedge funds and asset managers, use options for income, to hedge risk and to speculate about future market movements.  Options are more risky than common stock as the price moves faster and fluctuates at a faster pace.  
 
-|   So, what is an options contract?  It is a contract that its value is based on an underlying asset or security like a common stock or bond.  It is the most common form of a derivative, meaning its price is linked to the price of another underlying asset.  A single options contract represents 100 shares of the underlying asset it is representing.  The contract gives the buyer the right to buy the underlying asset at a specific price on or by a certain date.  There are two types of financial options: European and American.  European options can only be exercised, or right to buy the underlying asset, at the time of expiration and American options can be exercised at any time.  Again, an options contract gives the buyer the right to buy the underlying asset at a specific price on or by a certain date and exercising the contract just means you finish the transaction and buy the underlying asset at the exercise price.    
+|   So, what is an options contract?  It is a contract that its value is based on an underlying asset or security like a common stock or bond.  It is the most common form of a derivative, meaning its price is linked to the price of another underlying asset.  A single options contract represents 100 shares of the underlying asset it is representing.  The contract gives the buyer the right to buy the underlying asset at a specific price on or by a certain date.  There are two types of financial options: European and American.  European options can only be exercised, or right to buy the underlying asset, at the time of expiration and American options can be exercised at any time before the options expiration.  Again, an options contract gives the buyer the right to buy the underlying asset at a specific price on or by a certain date and exercising the contract just means you finish the transaction and buy the underlying asset at the exercise/strike price.    
 
-|   Valuing options is essentially about determining the probabilities of future prices for the underlying asset.  The more likely something is to occur, the more expensive an option for that event will be.  As the time to maturity, or time until the option expires, decreases, the less valuable the option will become.  Prior to the methods listed in this paper, there was no standard method for determining option prices.  
+|   Valuing options is essentially about determining the probabilities of future prices for the underlying asset.  The more likely a stock price is to reach the strike price, the more expensive the options premium will be.  As the time to maturity, or time until the option expires, decreases, the less valuable the option will become.  Prior to the methods listed in this paper and the Black-Scholes Model which this paper used to derive their method, there was no standard method for determining option prices.
 
   
 # History             
@@ -61,7 +63,6 @@ ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_ba
 
 
 # Methodology   
-
 
 
 
