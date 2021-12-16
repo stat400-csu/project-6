@@ -1,4 +1,9 @@
 # project-6
 Group 6 Project for STAT400 @ CSU
+Contributors: Trevor Isaacson, Noah Smith and Buzz Walter
 
-Our project is based on a paper written by Phelim P. Boyle in 1976 called "Options: A Monte Carlo Approach".  Our goal is to recreate the Monte Carlo simulation while also updating parameters to today's numbers.
+project research.rmd contains all our of code
+project-paper.pdf contains our final paper
+project-paper.rmd contains code for our final paper
+Final-Slides.pdf contains our presentation slides
+Final Slides.rmd contains code for our slides
