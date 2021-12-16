@@ -25,7 +25,7 @@ I = \int f(y)g(y)dx
 \end{equation}
 where $f(x)$ is a distribution and the integration region is the corresponding support. We then are tasked with estimating $\mathbb{E}(g(y))$ which can be done with the sample mean.   
 
-The simulations achieve many results from the samples drawn and then averages those results to obtain a final estimate. These multidimensional simulations can then be used to model various outcomes that might be difficult otherwise with numerical integration.  These simulations can be used in many different areas and fields including finance, engineering, supply chain and many others.            
+|   The simulations achieve many results from the samples drawn and then averages those results to obtain a final estimate. These multidimensional simulations can then be used to model various outcomes that might be difficult otherwise with numerical integration.  These simulations can be used in many different areas and fields including finance, engineering, supply chain and many others.            
 
 
 |   In order to apply what we have learned regarding Monte Carlo methods and simulations, our group was able to identify an article within statistical literature that applies Monte Carlo to financial options.  "Options: A Monte Carlo Approach" was published in 1977 by Phelim P. Boyle in the Journal of Financial Economics.  While the article is 44 years old, much of the paper can still be applied to today's financial markets and statistical approaches.         
@@ -72,7 +72,7 @@ ggplot(data = lognorms, aes(x = Value, group = x_bar, fill = x_bar, color = x_ba
 
 # Methodology   
 
-Boyle's work took off where Cox and Ross(1977) stopped, deriving the expectation of the ratio of stock prices from the Black Scholes model,
+|   Boyle's work took off where Cox and Ross (1977) stopped, deriving the expectation of the ratio of stock prices from the Black Scholes model,
 \begin{equation}
 \mathbb{E}(\frac{S_T}{S_t}) = e^{r(T-t)}
 \end{equation}
@@ -88,10 +88,8 @@ from
 \begin{equation}
 \mathbb{E}(\frac{S_{t+1}}{S_{t}}) = e^{(r - \sigma^2) + \sigma^2}.
 \end{equation}
-In each cycle stocks are assumed take on a background random interest given by normal distribution with 0 mean and variance $\sigma$ defined as the volatility of the stock.  The goal of our simulation is to calculate the value of the option.  This is simple how much the option could pay out if exercised.  We take then max$(S_T - E,0)$ as this value where (4) is iterated over each quarter till the period to maturity is reached.  In the actual calculation, the method accounted for the dividend paid out each quater as well, i.e. $S_{t+1} - D$ after each iteration. If it were the case, for a particular trial, that this value creeped below zero, the method outlined starting at the exact quarter where that occured and finishing out the trial getting the period to maturity.  The monte carlo calculation comes from the fact that calculating the final option price for a trial accounts to the function which we mean to take the expected value of in pricing the option.  Therefore the sample mean of the trials for a particular set of conditions represents a quantifiably accurate pricing for the option.
+|   In each cycle, stocks are assumed to take on a background random interest given by normal distribution with 0 mean and variance $\sigma$ defined as the volatility of the stock.  The goal of our simulation is to calculate the value of the option.  This is simply how much the option could pay out if exercised.  We take the max$(S_T - E,0)$ as this value where (4) is iterated over each quarter till the period to maturity is reached.  In the actual calculation, the method accounted for the dividend paid out each quater as well, i.e. $S_{t+1} - D$ after each iteration. If it were the case, for a particular trial, that this value creeped below zero, the method outlined starting at the exact quarter where that occured and finishing out the trial getting the period to maturity.  The monte carlo calculation comes from the fact that calculating the final option price for a trial accounts to the function which we mean to take the expected value of in pricing the option.  Therefore, the sample mean of the trials for a particular set of conditions represents a quantifiably accurate pricing for the option.
 
-
-# Simulation    
 ```{r echo = FALSE}
 trials = 5000
 periods_to_maturity = c(2,4,6,8,10,12,14,16,18,20)
@@ -335,6 +333,7 @@ ggplot(df_75, aes(x=Periods_til_maturity, y=Option_values)) +
 
 |   In each plot, there are clearly some differences between our simulations and the simulation results listed in the paper.  Around 1977, the time in which Boyle published his paper, the inflation rate around 7% and the treasury yield was around 8% and climbing.  These numbers are important because the final option price is discounted by the rate of the risk free rate, inflation rate - treasury.  Today, the inflation rate is around 6% and the treasury yield is around 2%.  The differences is these numbers, over a long period of time, can lead to bigger differences in our simulated values and the Boyle's simulated values.  
   
+|    In all, Boyle's method has withstood the test of time and clearly can still be applied to options with current numbers.  The flexibility and simplicity of the Monte Carlo method makes Boyle's method a great way of simulating option prices and values.  With financial options being such a large part of the overall financial market, hedge funds and investors will continue to use methods like Boyle's Monte Carlo simulations to determine the best potential investments.  
   
   
   
