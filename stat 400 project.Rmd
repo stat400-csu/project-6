@@ -1,0 +1,14 @@
+---
+title: "Project 6 for STAT 400"
+author: "Juliette Dashe"
+date: "2025-11-07"
+output: html_document
+---
+
+```{r}
+
+print("juliette----dashe---")
+
+
+```
+
