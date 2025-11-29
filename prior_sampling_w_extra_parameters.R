@@ -11,18 +11,29 @@
 ### THIS IS NOT THE ORIGINAL FILE, EDITS HAVE BEEN MADE ###
 
 par_dimension <- 5 # MK: edit to number of parameters needed
-theta <- array(0, dim = c(N, par_dimension, K)) # initialise array
+theta <- array(0, dim = c(N, par_dimension, K)) # initialise array; MK: insert new dimension
 prior_mean <- -1.4
 prior_std <- 1.35
 
 for (p in 1:K){
   
   if (models[p] %in% c(1,2)){
-    theta[,,p] <- rnorm(N*3, prior_mean, prior_std) %>% matrix(N, 3)
+    theta[,,p] <- cbind(
+      rnorm(N, prior_mean, prior_std), # MK: beta
+      rnorm(N, prior_mean, prior_std), # MK: gamma
+      rnorm(N, prior_mean, prior_std), # MK: epsilon
+      rnorm(N, prior_mean, prior_std), # MK: Th
+      rnorm(N, prior_mean, prior_std) # MK: delta
+    )
   } 
   
   else if (models[p] %in% c(3,4)){
-    theta[,,p] <- cbind(rnorm(N, prior_mean, prior_std), rnorm(N, prior_mean, prior_std), rep(0, N))
+    theta[,,p] <- cbind(
+      rnorm(N, prior_mean, prior_std), # MK: beta
+      rnorm(N, prior_mean, prior_std), # MK: gamma
+      rnorm(N, prior_mean, prior_std), # MK: epsilon
+      rnorm(N, prior_mean, prior_std) # MK: Th
+    )
   }
 
 }
