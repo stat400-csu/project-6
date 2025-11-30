@@ -171,7 +171,7 @@ for (i in 1:I){
     cat(paste("Model", models[M], "ESS:", floor(ESS[M])), sep="\n")
     
     if (ESS[M] < E){
-      source('resample_then_move.R')
+      source('resample_then_move_Jake_Copy.R') #JB: uses my copy
     }
   }
   
@@ -192,7 +192,7 @@ for (M in 1:K){
   cat(paste("Model", models[M],":"), sep ="\n")
   
   if (ESS[M] != N){
-    source('resample_then_move.R')
+    source('resample_then_move_Jake_Copy.R') #JB: uses my copu
   }
   
   # Display log evidence
