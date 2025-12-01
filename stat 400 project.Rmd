@@ -5,19 +5,302 @@ date: "2025-11-07"
 output: html_document
 ---
 
+```{r setup, include=FALSE}
+# Loading in packages
+
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(deSolve)
+library(mvtnorm)
+library(pracma)
+library(reshape)
+library(ggplot2)
+library(tidyr)
+library(ggpubr)
+library(ggthemes)
+library(latex2exp)
+
+# Loading in functions created by Moffat
+source('generate_data.R')
+source('additional_functions.R')
+```
+
+Author's Code: ANY EDITS HAVE COMMENT WITH "JD"
+
 ```{r}
+## MAKING AUTHOR'S CODE INTO A FUNCTION so I can use other values later
+run_smc_simulation <- function(input_N = 500, input_R = 0, input_I = 25, input_seed = 400) {
+  
+  # 1. SETUP PARAMETERS
+  set.seed(400) 
+  
+  # Override standard variables with Function Arguments
+  N <- input_N
+  R <- input_R
+  I <- input_I
+  
+  # Fixed Project Settings
+  models <- 1:4 %>% matrix(nrow = 1)
+  modeltype <- list("Beta Binomial type 2 functional response model",
+                    "Beta Binomial type 3 functional response model",
+                    "Binomial type 2 functional response model",
+                    "Binomial type 3 functional response model")
+  
+  # Load example dataset for methods that require it
+  if (R %in% 4:5){
+    dataset <- read.table("papanikolau_data.txt", sep = " ", col.names = c("N", "n")) %>% as.matrix
+  }
+  
+  # Select "true values" of parameters for methods that require it
+  if (R %in% c(0:3,5)){
+    a <- 0.5
+    Th <- 0.7
+    lambda <- 0.5
+    parameter_set <- matrix(c(a, Th, lambda), nrow = 1) %>% log
+    M_true <- 1
+  }
+  
+  # Assign values to parameters 
+  K <- length(models) # number of models
+  E <- N/2 # threshold for ESS for SMC
+  Nmin <- 1 # min value in the discrete design space
+  Nmax <- 300 # max value in the discrete design space
+  time <- 24 # length of time that predator has access to prey in hours
+  tol <- 2 # tolerance for ESS 
+  
+  ##############################################################
+  # CONDUCTING THE SMC
+  ##############################################################
+  
+  # Initialise other required quantities 
+  data <- matrix(0, I, 2) # Set up data
+  log_Z = matrix(0, 1, K) # initialise log estimate of evidence
+  loglik = matrix(0, N, K) # initialise vector of log likelihood
+  logpri = matrix(0, N, K) # initialise vector of log prior
+  px = matrix(0, N, K) # initialise vector of the log posterior
+  w = matrix(0, N, K) # initialise vector of unnormalised weights of particles
+  ESS = matrix(0, 1, K) # initialise vector of effective sample size of each model
+  
+  # Draw theta from prior distribution
+  # NOTE: We use local=TRUE so it runs inside this function environment
+  source('prior_sampling.R', local = TRUE)
+  
+  W <- rep(1/N, N * K) %>% matrix(nrow = N)
+  
+  all_cov_matrices <- list()
+  for(M in 1:K){
+    all_cov_matrices[[M]] = cov(theta[,,M])
+  }
+  
+  ## RUN SMC ALGORITHM LOOP
+  for (i in 1:I){
+    
+    # Optional: Print progress only if N is large (to keep report clean)
+    if(N > 100) {
+      cat(paste("    **** Iteration number", i, "**** "), sep ="\n")
+    }
+    
+    if (R %in% c(0, 1, 2, 3, 5)){
+      if  (R == 0){
+        # Select design points randomly
+        data[i,1]= sample(Nmin:Nmax, 1, replace = T)
+      }
+      else if (R == 1){
+        source('parameter_estimation_utility.R', local = TRUE) 
+        source('utility_plot.R', local = TRUE) 
+      }
+      else if (R == 2){
+        source('model_discrimination_utility.R', local = TRUE) 
+        source('utility_plot.R', local = TRUE) 
+      }
+      else if (R == 3){
+        source('total_entropy_utility.R', local = TRUE) 
+        source('utility_plot.R', local = TRUE) 
+      }
+      else {
+        data[i,1] <- dataset[i,1] 
+      }
+      
+      # Generate observation from the design point
+      data[i,2] <- generate_data(data[i,1], parameter_set, observation_time = time, M_true)[[1]]
+    }
+    else if(R == 4){
+      data[i,] <- dataset[i,] 
+    }
+    
+    data_subset <- data[1:i,, drop = FALSE] 
+    
+    for (M in 1:K){
+      #  Re-weight
+      w[,M] = W[,M] * exp(loglikelihood_Hollings(exp(theta[,,M]), data[i,,drop = FALSE], observation_time = time, models[M]))
+      log_Z[M] = log_Z[M] + log(sum(w[,M]))
+      
+      # Normalise weights
+      W[,M] = w[,M]/sum(w[,M])
+      
+      # Compute ESS at time t
+      ESS[M] = 1/ sum(W[,M]^2)
+      
+      if (ESS[M] < E){
+        source('resample_then_move.R', local = TRUE)
+      }
+    }
+  }
+  
+  ##############################################################
+  # FINAL RESAMPLING AND RESULTS
+  ##############################################################
+  
+  ## Conduct a final resampling and move step 
+  for (M in 1:K){
+    if (ESS[M] != N){
+      source('resample_then_move.R', local = TRUE)
+    }
+    
+    # Calculate log Bayesian D-posterior precision 
+    covariance = cov(exp(theta[,,M]))
+    if (models[M] %in% 3:4){covariance = covariance[1:2, 1:2]}
+    log_D_post_prec = -log(det(covariance));
+    
+    # Plot marginal posterior distributions
+    # Note: This will generate plots every time you run the function.
+    cat(paste("Plotting results for Model", models[M]), sep="\n")
+    source('SMC_plot.R', local = TRUE)
+  }
+  
+  # Calculate Posterior Model Probabilities
+  posterior_model_prob = exp(log_Z - logsumexp(log_Z,0))
+  
+  # Return a list of the important results so you can use them later
+  return(list(
+    final_probabilities = posterior_model_prob,
+    data_collected = data,
+    final_evidence = log_Z,
+    final_ESS = ESS
+  ))
+}
 
-print("juliette----dashe---")
 
 
-print("does this work?")
-print("hello")
+```
+
+
+
+```{r run_experiments, echo=TRUE, cache=TRUE}
+# --- EXPERIMENT 1: SENSITIVITY TO PARTICLE COUNT (N) ---
+# Hypothesis: Low N will result in unstable probabilities (High Monte Carlo Error).
+# We keep R=0 (Random) constant to isolate the effect of N.
+
+cat("Running Low Particle Simulation (N=50)...\n")
+# CHANGE OF VARIABLE 1: N = 50
+results_N_low <- run_smc_simulation(input_N = 50, input_R = 0, input_seed = 123)
+
+cat("Running High Particle Simulation (N=5000)...\n")
+# CHANGE OF VARIABLE 2: N = 5000
+results_N_high <- run_smc_simulation(input_N = 1000, input_R = 0, input_seed = 123)
+
+
+# --- EXPERIMENT 2: EFFICIENCY OF DESIGN STRATEGY (R) ---
+# Hypothesis: R=2 (Smart) will identify the true model with higher probability 
+# than R=0 (Random), given the same particle count.
+# We keep N=500 constant to isolate the effect of R.
+
+cat("Running Random Design (R=0)...\n")
+# CHANGE OF VARIABLE 3: R = 0 (Control Group)
+results_R_random <- run_smc_simulation(input_N = 500, input_R = 0, input_seed = 400)
+
+cat("Running Optimal Design (R=2)...\n")
+# CHANGE OF VARIABLE 4: R = 2 (Treatment Group)
+results_R_smart <- run_smc_simulation(input_N = 500, input_R = 2, input_seed = 400)
+```
+
+
+
+
+
+    
+    
+
+
+
+
+```{r}
+#JD: checking effect of Particle Count (N), which was originally N = 500
+# This mimics the "Initialisation" phase of the SMC
+
+set.seed(400)
+
+# True parameter we are trying to estimate
+true_mean <- 0.5 
+
+# Compare two particle sizes
+N_low <- 50    # Your Modification A
+N_high <- 5000 # Your Modification B
+
+# Generate particles (Drawing theta from prior)
+particles_low <- rnorm(N_low, mean = true_mean, sd = 1)
+particles_high <- rnorm(N_high, mean = true_mean, sd = 1)
+
+# Calculate estimates
+est_low <- mean(particles_low)
+est_high <- mean(particles_high)
+
+# Calculate Standard Error (Monte Carlo Error)
+se_low <- sd(particles_low) / sqrt(N_low)
+se_high <- sd(particles_high) / sqrt(N_high)
+
+# Output results for your report
+cat(paste("True Value: ", true_mean, "\n"))
+cat(paste("N=50 Estimate: ", round(est_low, 4), " (Error: ", round(se_low, 4), ")\n"))
+cat(paste("N=5000 Estimate: ", round(est_high, 4), " (Error: ", round(se_high, 4), ")\n"))
+
+# Visual check
+par(mfrow=c(1,2))
+hist(particles_low, main="Low N (Jumpy)", col="red")
+abline(v=true_mean, lwd=3)
+hist(particles_high, main="High N (Smooth)", col="blue")
+abline(v=true_mean, lwd=3)
+
+
+
+
 ```
 
 
 ```{r}
+# VISUALIZATION: Why is this problem hard?
+# Comparing Holling Type II vs Type III Functional Responses
 
-print("Jake----Brisnehan---")
+# Create a range of prey densities (x-axis)
+N_prey <- seq(0, 100, by = 1)
 
+# Parameters (Using the values from the author's code)
+a <- 0.5    # Attack rate
+Th <- 0.7   # Handling time
+
+# --- FORMULAS ---
+# Type II: aN / (1 + a * Th * N)
+# predator eats fast immediately, then gets full.
+Type2 <- (a * N_prey) / (1 + a * Th * N_prey)
+
+# Type III: aN^2 / (1 + a * Th * N^2)  (Simplified version commonly used)
+# predator is slow to start, accelerates, then gets full.
+# Note: The specific math for Type III can vary, but this captures the "sigmoid" shape.
+Type3 <- (a * N_prey^2) / (1 + a * Th * N_prey^2)
+
+# Plotting
+plot(N_prey, Type2, type = "l", col = "blue", lwd = 3, 
+     ylab = "Number of Prey Eaten", xlab = "Prey Density (N)",
+     main = "The Statistical Challenge: Type II vs Type III")
+lines(N_prey, Type3, col = "red", lwd = 3, lty = 2)
+
+# Add Legend
+legend("bottomright", legend = c("Type II (Glutton)", "Type III (Learner)"),
+       col = c("blue", "red"), lty = c(1, 2), lwd = 3)
+
+# Add "Data Points" to show how noise makes it hard
+# Imagine collecting data at N=20... the lines are almost on top of each other!
+abline(v = 20, col = "gray", lty = 3)
+text(20, 5, "Hard to distinguish\nhere", pos = 4, col = "gray30")
 ```
 

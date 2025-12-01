@@ -1,0 +1,33 @@
+---
+title: "Sequential Experimental Design for Predator-Prey Models"
+author: "Juliette Dashe, Jake Brisnehan, Mia Krause"
+date: "12/1/2025"
+output: 
+  pdf_document:
+    number_sections: true
+    toc: true
+  html_document:
+    theme: journal
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.align = 'center')
+library(ggplot2)
+
+```
+
+
+# Motivation
+
+motivation
+
+# Methodology
+## part one
+asdf
+
+# Results
+# graphs to the moon and back
+
+# References
+Moffat Hayden, Hainy Markus, Papanikolaou Nikos E. and Drovandi Christopher 2020Sequential experimental design for predator–prey functional response experimentsJ. R. Soc. Interface.1720200156
+http://doi.org/10.1098/rsif.2020.0156
