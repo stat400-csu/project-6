@@ -13,7 +13,7 @@
 par_dimension <- 5 # MK: edit to number of parameters needed
 theta <- array(0, dim = c(N, par_dimension, K)) # initialise array; MK: insert new dimension
 prior_mean <- -1.4
-prior_std <- 0.5
+prior_std <- 0.5 #MK: changed to try debugging, original was 1.35
 
 for (p in 1:K){
   
