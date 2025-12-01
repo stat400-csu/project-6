@@ -13,7 +13,7 @@
 par_dimension <- 5 # MK: edit to number of parameters needed
 theta <- array(0, dim = c(N, par_dimension, K)) # initialise array; MK: insert new dimension
 prior_mean <- -1.4
-prior_std <- 1.35
+prior_std <- 0.5
 
 for (p in 1:K){
   
@@ -32,7 +32,8 @@ for (p in 1:K){
       rnorm(N, prior_mean, prior_std), # MK: beta
       rnorm(N, prior_mean, prior_std), # MK: gamma
       rnorm(N, prior_mean, prior_std), # MK: epsilon
-      rnorm(N, prior_mean, prior_std) # MK: Th
+      rnorm(N, prior_mean, prior_std), # MK: Th
+      rep(0, N) # MK: Delta vector = 0 since matrix of 5 is needed. 
     )
   }
 

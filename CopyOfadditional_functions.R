@@ -181,17 +181,29 @@ log_prior <- function(x, model){
 ###########################################################
 
 
-ode_Hollings <- function(tau, N, phi, model) {
+ode_Hollings <- function(tau, N, parms) {
+  
+  
+  phi <- parms$phi # MK
+  model <- parms$model #MK
+  
+  beta_ode <- phi[1] # MK
+  gamma_ode <- phi[2] # MK
+  epsilon_ode <- phi[3] # MK
+  Th_ode <- phi[4] # MK
+  
+  a_ode <- beta_ode*gamma_ode*epsilon_ode # MK
+  
   
   if (model %in% c(1,3)){
     # Equation for Holling's Type II model
-    f <- - phi[1]*N/(1+phi[1]*phi[2]*N)
+    f <- - a_ode*N/(1+a_ode*Th_ode*N) # MK
     return(list(f))
   }
   
   else if (model %in% c(2,4)){
     # Equation for Holling's Type III model
-    f <- - phi[1]*N^2/(1+phi[1]*phi[2]*N^2)
+    f <- - a_ode*N^2/(1+a_ode*Th_ode*N^2)
     return(list(f))
   }
   
@@ -219,17 +231,27 @@ ode_Hollings <- function(tau, N, phi, model) {
 
 solve_ode_Hollings <- function(phi, N0, observation_time, model) {
   
-  solution <- matrix(rep(NA, times = length(N0)*nrow(phi)), nrow= nrow(phi))
+  solution <- matrix(NA, nrow = nrow(phi), ncol = length(N0))
   Hol.t <- seq(0, observation_time, len = 10) # define the time range in which the ODE will be solved
   
   for (i in 1:nrow(phi)){
 
-    res <- ode(N0, Hol.t, ode_Hollings, phi[i,], model = model)  # solve the ODE
-    solution[i,] <- res[nrow(res),2:ncol(res), drop = FALSE]# only look at the final end point since this is the information that is relevant to the obervational data 
+    res <- ode(N0, Hol.t, ode_Hollings, parms = list(phi = phi[i, ], model = model))  # solve the ODE
     
-  }
+    if (inherits(res, "try-error") || anyNA(res)){
+      next
+    }
+    sol_test <- res[nrow(res), 2:ncol(res)]
+    sol_test[i,] <- res[nrow(res),2:ncol(res), drop = FALSE]# only look at the final end point since this is the information that is relevant to the obervational data 
+    
+    if (anyNA(sol_test) || any(!is.finite(sol_test))){
+      next
+    }
   
-  solution[solution < 0] <- 0 
+  
+  sol_test[sol_test < 0] <- 0 
+  solution[i, ] <- sol_test
+  }
   return(solution)
   
 }
@@ -269,6 +291,9 @@ loglikelihood_Hollings <- function(phi, data, observation_time, model) {
     N <- unique(data[,1]) 
     ic <- match(data[,1], N)
     v <- solve_ode_Hollings(phi_new, N0=N, observation_time = observation_time, model = model) %>% matrix(ncol = length(N))
+    if (anyNA(v) || any(!is.finite(pred))) {
+      return(-Inf)
+    }
     V <- v[,ic, drop = FALSE]
   
     # determine probability of prey being eaten

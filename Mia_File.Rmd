@@ -159,8 +159,19 @@ for (i in 1:I){
   
   for (M in 1:K){
     
+    log_like <- loglikelihood_Hollings(exp(theta[,,M]), data[i, , drop = F], time, models[M]) # MK: Checking for NA's
+    
+    if (!is.numeric(log_like) || length(log_like) != N) {
+      cat("ERROR: loglikehood function returned wrong shape for model:", models[M],"length:", length(log_like),"expected:", N,'\n')
+      log_like <- rep(-Inf, N)
+    }
+    
+    check_nonfin <- which(!is.finite(log_like))
+    if(length(check_noninf) > 0){
+      log_like[check_noninf] <- -Inf
+    } # MK: Checking for NA's
     #  Re-weight
-    w[,M] = W[,M] * exp(loglikelihood_Hollings(exp(theta[,,M]), data[i,,drop = FALSE], observation_time = time, models[M]))
+    w[,M] = W[,M] * exp(log_like)
     log_Z[M] = log_Z[M] + log(sum(w[,M]))
                           
     # Normalise weights
@@ -171,7 +182,7 @@ for (i in 1:I){
     cat(paste("Model", models[M], "ESS:", floor(ESS[M])), sep="\n")
     
     if (ESS[M] < E){
-      source('resample_then_move.R')
+      source('CopyOfresample_then_move.R')
     }
   }
   
