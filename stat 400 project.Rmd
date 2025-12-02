@@ -28,8 +28,9 @@ source('additional_functions.R')
 Author's Code: ANY EDITS HAVE COMMENT WITH "JD"
 
 ```{r}
-## MAKING AUTHOR'S CODE INTO A FUNCTION so I can use other values later
-run_smc_simulation <- function(input_N = 500, input_R = 0, input_I = 25, input_seed = 400) {
+set.seed(400)
+## MAKING AUTHOR'S CODE INTO A FUNCTION so I can use other values later, commenting out utility plots 
+run_smc_simulation <- function(input_N = 500, input_R = 0, input_I = 15, input_seed = 400) { #JD changed I from 25 to 15 for computational purposes and made into a function
   
   # 1. SETUP PARAMETERS
   set.seed(400) 
@@ -95,7 +96,6 @@ run_smc_simulation <- function(input_N = 500, input_R = 0, input_I = 25, input_s
   ## RUN SMC ALGORITHM LOOP
   for (i in 1:I){
     
-    # Optional: Print progress only if N is large (to keep report clean)
     if(N > 100) {
       cat(paste("    **** Iteration number", i, "**** "), sep ="\n")
     }
@@ -107,15 +107,15 @@ run_smc_simulation <- function(input_N = 500, input_R = 0, input_I = 25, input_s
       }
       else if (R == 1){
         source('parameter_estimation_utility.R', local = TRUE) 
-        source('utility_plot.R', local = TRUE) 
+       # source('utility_plot.R', local = TRUE) # JD commenting these out for computation purposes
       }
       else if (R == 2){
         source('model_discrimination_utility.R', local = TRUE) 
-        source('utility_plot.R', local = TRUE) 
+        # source('utility_plot.R', local = TRUE)  # JD commenting these out for computation purposes
       }
       else if (R == 3){
         source('total_entropy_utility.R', local = TRUE) 
-        source('utility_plot.R', local = TRUE) 
+       # source('utility_plot.R', local = TRUE)  # JD commenting these out for computation purposes
       }
       else {
         data[i,1] <- dataset[i,1] 
@@ -163,7 +163,6 @@ run_smc_simulation <- function(input_N = 500, input_R = 0, input_I = 25, input_s
     log_D_post_prec = -log(det(covariance));
     
     # Plot marginal posterior distributions
-    # Note: This will generate plots every time you run the function.
     cat(paste("Plotting results for Model", models[M]), sep="\n")
     source('SMC_plot.R', local = TRUE)
   }
@@ -171,7 +170,7 @@ run_smc_simulation <- function(input_N = 500, input_R = 0, input_I = 25, input_s
   # Calculate Posterior Model Probabilities
   posterior_model_prob = exp(log_Z - logsumexp(log_Z,0))
   
-  # Return a list of the important results so you can use them later
+  # Return a list of the important results to use later if needed
   return(list(
     final_probabilities = posterior_model_prob,
     data_collected = data,
@@ -186,40 +185,47 @@ run_smc_simulation <- function(input_N = 500, input_R = 0, input_I = 25, input_s
 
 
 
-```{r run_experiments, echo=TRUE, cache=TRUE}
+```{r run_experiments, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+# --- ORIGINAL VARIABLE COUNT - SENSITIVITY TO PARTICLE COUNT (N) ---
+# Showing graphs from original experiment
+# We keep R=0 (Random) constant to isolate the effect of N.
+set.seed(400)
+cat("Running Original Particle Simulation (N=500)...\n")
+# CHANGE OF VARIABLE 1: N = 500
+results_N_original <- run_smc_simulation(input_N = 500, input_R = 0, input_seed = 400)
+```
+
+```{r run_experiments, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+# --- EXPERIMENT 1: Super low N ----
+# Hypothesis: Low N will result in unstable probabilities (High Monte Carlo Error).
+# We keep R=0 (Random) constant to isolate the effect of N.
+set.seed(400)
+cat("Running Low Particle Simulation (N=50)...\n")
+#  N = 50
+results_N_lowest <- run_smc_simulation(input_N = 30, input_R = 0, input_seed = 400)
+
+```
+
+```{r run_experiments, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
 # --- EXPERIMENT 1: SENSITIVITY TO PARTICLE COUNT (N) ---
 # Hypothesis: Low N will result in unstable probabilities (High Monte Carlo Error).
 # We keep R=0 (Random) constant to isolate the effect of N.
+set.seed(400)
+cat("Running Medium Particle Simulation (N=100)...\n")
+# CHANGE OF VARIABLE 1: N = 100
+results_N_medium <- run_smc_simulation(input_N = 100, input_R = 0, input_seed = 400)
 
-cat("Running Low Particle Simulation (N=50)...\n")
-# CHANGE OF VARIABLE 1: N = 50
-results_N_low <- run_smc_simulation(input_N = 50, input_R = 0, input_seed = 123)
-
-cat("Running High Particle Simulation (N=5000)...\n")
-# CHANGE OF VARIABLE 2: N = 5000
-results_N_high <- run_smc_simulation(input_N = 1000, input_R = 0, input_seed = 123)
-
-
-# --- EXPERIMENT 2: EFFICIENCY OF DESIGN STRATEGY (R) ---
-# Hypothesis: R=2 (Smart) will identify the true model with higher probability 
-# than R=0 (Random), given the same particle count.
-# We keep N=500 constant to isolate the effect of R.
-
-cat("Running Random Design (R=0)...\n")
-# CHANGE OF VARIABLE 3: R = 0 (Control Group)
-results_R_random <- run_smc_simulation(input_N = 500, input_R = 0, input_seed = 400)
-
-cat("Running Optimal Design (R=2)...\n")
-# CHANGE OF VARIABLE 4: R = 2 (Treatment Group)
-results_R_smart <- run_smc_simulation(input_N = 500, input_R = 2, input_seed = 400)
 ```
+```{r run_experiments, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+# --- EXPERIMENT 1: SENSITIVITY TO PARTICLE COUNT (N) ---
+# Hypothesis: Low N will result in unstable probabilities (High Monte Carlo Error).
+# We keep R=0 (Random) constant to isolate the effect of N.
+set.seed(400)
+cat("Running High Particle Simulation (N=1000)...\n")
+# CHANGE OF VARIABLE 1: N = 1000
+results_N_high <- run_smc_simulation(input_N = 1000, input_R = 0, input_seed = 400)
 
-
-
-
-
-    
-    
+```
 
 
 
@@ -268,39 +274,58 @@ abline(v=true_mean, lwd=3)
 
 
 ```{r}
-# VISUALIZATION: Why is this problem hard?
-# Comparing Holling Type II vs Type III Functional Responses
+# VISUALIZATION: The Statistical Challenge
+# Comparing Holling Type II vs Type III Functional Responses with Noise
 
-# Create a range of prey densities (x-axis)
+set.seed(400) # Fix seed so points stay in the same place
+
+# 1. SETUP PARAMETERS
 N_prey <- seq(0, 100, by = 1)
+a <- 0.5      # Attack rate
+Th <- 0.7     # Handling time
+T_time <- 24  # Time in hours (Standard daily experiment)
 
-# Parameters (Using the values from the author's code)
-a <- 0.5    # Attack rate
-Th <- 0.7   # Handling time
+# 2. CALCULATE CURVES (Scaled by Time)
+# Type II: (a * N * T) / (1 + a * Th * N)
+Type2 <- (a * N_prey * T_time) / (1 + a * Th * N_prey)
 
-# --- FORMULAS ---
-# Type II: aN / (1 + a * Th * N)
-# predator eats fast immediately, then gets full.
-Type2 <- (a * N_prey) / (1 + a * Th * N_prey)
+# Type III: (a * N^2 * T) / (1 + a * Th * N^2)
+Type3 <- (a * N_prey^2 * T_time) / (1 + a * Th * N_prey^2)
 
-# Type III: aN^2 / (1 + a * Th * N^2)  (Simplified version commonly used)
-# predator is slow to start, accelerates, then gets full.
-# Note: The specific math for Type III can vary, but this captures the "sigmoid" shape.
-Type3 <- (a * N_prey^2) / (1 + a * Th * N_prey^2)
-
-# Plotting
+# 3. PLOT THE CURVES
+# Set ylim to make room for text labels
 plot(N_prey, Type2, type = "l", col = "blue", lwd = 3, 
-     ylab = "Number of Prey Eaten", xlab = "Prey Density (N)",
-     main = "The Statistical Challenge: Type II vs Type III")
+     ylim = c(0, 35),
+     ylab = "Prey Eaten (Count)", xlab = "Prey Density (N)",
+     main = "The Challenge: Distinguishing Models with Noise")
+
 lines(N_prey, Type3, col = "red", lwd = 3, lty = 2)
 
-# Add Legend
 legend("bottomright", legend = c("Type II (Glutton)", "Type III (Learner)"),
        col = c("blue", "red"), lty = c(1, 2), lwd = 3)
 
-# Add "Data Points" to show how noise makes it hard
-# Imagine collecting data at N=20... the lines are almost on top of each other!
-abline(v = 20, col = "gray", lty = 3)
-text(20, 5, "Hard to distinguish\nhere", pos = 4, col = "gray30")
+# 4. SIMULATE "NOISY" DATA (The Challenge)
+
+# Scenario A: Bad Design (High Density)
+# Where the lines overlap, data is useless.
+bad_N <- 80
+# Calculate the "True" Type 2 value and add random noise (sd=2)
+bad_point <- ((a * bad_N * T_time) / (1 + a * Th * bad_N)) + .8
+
+points(bad_N, bad_point, pch=19, col="black", cex=1.5)
+text(bad_N, bad_point - 5, "Type II or III?\nMuch harder to tell with real, noisy data", pos=2, col="black")
+
+# Scenario B: Good Design (Low Density)
+# Where the lines diverge, data is valuable.
+good_N <- 8
+# Calculate the "True" Type 2 value and add random noise
+good_point <- ((a * good_N * T_time) / (1 + a * Th * good_N)) + .35
+
+points(good_N, good_point, pch=19, col="green4", cex=1.5)
+# Draw an arrow or line to show the gap
+arrows(good_N, good_point, good_N, 5, length=0.1, col="green4")
+text(good_N+2, 5, "We need data\nHERE", pos=4, col="green4", font=2)
+```
+
 ```
 

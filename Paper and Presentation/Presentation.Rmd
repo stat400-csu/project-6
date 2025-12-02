@@ -1,0 +1,47 @@
+---
+title: "Sequential Experimental Design for Predator-Prey Models"
+subtitle: "Stat 400 Final Project"
+author: "Juliette Dashe, Jake Brisnehan, Mia Krauss"
+date: "`r Sys.Date()`"
+output: 
+  ioslides_presentation:
+    widescreen: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Motivation: The Ecological Problem
+
+<div style="font-size: 28px; line-height: 1.5;">
+
+**How do predators respond to prey density?**
+
+* <span style="color: blue">**Type II (Glutton):**</span> Eats fast, gets full quickly.
+* <span style="color: red">**Type III (Learner):**</span> Slow start (learning), accelerates, then gets full.
+
+<br>
+
+**The Issue:** These biological behaviors look mathematically identical at high prey densities.
+
+**The Goal:** Distinguish the correct model using the fewest experiments possible.
+
+</div>
+
+## Visualizing the Challenge
+
+```{r, echo=FALSE, out.width="80%", fig.align='center'}
+knitr::include_graphics("Statistical Challenge.png")
+```
+
+
+## Slide 2: The Results - Juliette
+
+Stuff blah blah plus loading in graphs after downloading them
+
+## Slide 3: The Results - Mia
+
+## Slide 4: The Results - Jake
+
+## Slide 5: Conclusion
