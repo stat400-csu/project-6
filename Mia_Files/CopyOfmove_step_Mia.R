@@ -21,25 +21,57 @@ if(ESS[M] > tol){
 
 cov_matrix <- all_cov_matrices[[M]]
 
+na_find <- which(is.na(theta[,,M]), arr.ind = T)
+if (nrow(na_find) > 0){
+  cat('Found NAs in theta')
+  print(head(na_find, 10))
+  
+  for (r in unique(na_find[,1])) {
+    if (exists('prior_mean') && exists('prior_std')){
+      theta[r, , M] <- rnorm(dim(theta)[2], mean = prior_mean, sd = prior_std)
+      
+    } else{
+      theta[r, , M] <- rep(0, dim(theta)[2])
+    }
+    cat('replaced theta row', r,'\n')
+  }
+}
 
 # Move each particle theta with MCMC kernel for 1 iteration
 n_moves = rep(0, N*K) %>% matrix(nrow = N, ncol = K) # variable that describes the number of particles that have moved after 1 iteration
 for (l in 1:N){
   u <- runif(1)
   x <- theta[l,,M] %>% matrix(nrow = 1)
+  if (any(!is.finite(x))){
+    cat('Skip particle')
+    next
+  }
   logpri[l,M] = log_prior(x, models[M]) # determine log prior of initial theta values
   loglik[l,M] = loglikelihood_Hollings(exp(x), data_subset, time, models[M]) # determine log likelihood of initial theta values
+  if(!is.finite(loglik[l,M])) log_lik[l,M] <- -Inf
   
   px[l,M] = loglik[l,M]+logpri[l,M]
 
   xs <- rmvnorm(1, x, cov_matrix) # new sample xs based on existing x from proposal pdf.
-  
-  if (any(!is.infinite(xs)) || any(xs < -20) || any(xs > 20)) {
+  xs <- as.numeric(xs)
+  if (any(!is.finite(xs)) || any(xs < -50) || any(xs > 50)) {
     next
   }
+  
+  theta_exp <- exp(xs)
+  
+  if (any(!is.finite(theta_exp)) || theta_exp[4] < 1e-10 ||theta_exp[4] > 1e6){
+    next
+  }
+  a <- theta_exp[1] * theta_exp[2] * theta_exp[3] # MK
+  Th <- theta_exp[4] # MK
+  
+  if (!is.finite(a) || a < 1e-6 || a > 1e6) next
+  if (!is.finite(Th) || Th < 1e-6 || Th > 1e2) next # MK: Ensuring a and Th are not 0, negative, or very large
   # Determine log prior and log likelihood of proposed theta values
   logprior_xs <- log_prior(xs, models[M])
-  loglik_xs <- loglikelihood_Hollings(exp(xs), data_subset, time, models[M])
+  loglik_xs <- loglikelihood_Hollings(theta_exp, data_subset, time, models[M])
+  if(!is.finite(loglik_xs)) loglik_xs <- -Inf
   pxs <- loglik_xs +logprior_xs
 
   
@@ -71,10 +103,18 @@ for (l in 1:N){
     u <- runif(1)
     x <- theta[l,,M] %>% matrix(nrow = 1)
     xs <- rmvnorm(1, x, cov_matrix) # new sample xs based on existing x from proposal pdf.
+    xs <- as.numeric(xs)
+    if (any(!is.finite(xs)) || any(xs < -50) || any(xs > 50)) {
+      next
+    }
+    theta_exp <- exp(xs)
+    if (any(!is.finite(theta_exp)) || theta_exp[4] < 1e-10 ||theta_exp[4] > 1e6){
+      next
+    }
     
     # Determine log prior and log likelihood of proposed theta values
     logprior_xs <- log_prior(xs, models[M])
-    loglik_xs <- loglikelihood_Hollings(exp(xs), data_subset, time, models[M]);
+    loglik_xs <- loglikelihood_Hollings(theta_exp, data_subset, time, models[M]);
     pxs <- loglik_xs +logprior_xs;
     
     if (u<min(1,exp(pxs-px[l,M]))){
@@ -87,5 +127,7 @@ for (l in 1:N){
     }
   }
 }
+W[,M] = rep(1/N, N) # MK: Reset the weights, remove if unnecessary
+ESS[M] = N
 
 

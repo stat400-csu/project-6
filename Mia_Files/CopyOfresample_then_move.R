@@ -10,7 +10,8 @@
 
 # Resample and move step
 theta[,,M] <- residual_resampling(W[,M], N, theta[,,M]) 
-source('move_step.R') 
+
+source('Mia_Files/CopyOfmove_step.R') 
 
 # Determine the number of unique particles
 n_unique = theta[,,M] %>% as.data.frame %>% as.tbl %>% distinct %>% nrow # d

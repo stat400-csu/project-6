@@ -22,8 +22,8 @@ library(ggthemes)
 library(latex2exp)
 
 # Loading in functions created by Moffat
-source('generate_data.R')
-source('CopyOfadditional_functions.R')
+source('Mia_Files/CopyOfgenerate_data.R')
+source('Mia_Files/CopyOfadditional_functions.R')
 ```
 
 
@@ -61,10 +61,12 @@ if (R %in% 4:5){
 
 #  Select "true values" of parameters for methods that require it
 if (R %in% c(0:3,5)){
-  a <- 0.5
+  beta <- 0.8
+  gamma <- 0.7
+  epsilon <- 0.9
   Th <- 0.7
   lambda <- 0.5
-  parameter_set <- matrix(c(a, Th, lambda), nrow = 1) %>% log
+  parameter_set <- matrix(c(beta, gamma, epsilon, Th, lambda), nrow = 1) %>% log
   M_true <- 1
 }
 
@@ -97,7 +99,7 @@ w = matrix(0, N, K) # initialise vector of unnormalised weights of particles
 ESS = matrix(0, 1, K) # initialise vector of effective sample size of each model
 
 # Draw theta from prior distribution, set intial weighting, set covariance matrices
-source('prior_sampling_w_extra_parameters.R')
+source('Mia_Files/prior_sampling_w_extra_parameters.R')
 W <- rep(1/N, N * K) %>% matrix(nrow = N)
 
 all_cov_matrices <- list()
@@ -161,34 +163,90 @@ for (i in 1:I){
     
     log_like <- loglikelihood_Hollings(exp(theta[,,M]), data[i, , drop = F], time, models[M]) # MK: Checking for NA's
     
-    if (!is.numeric(log_like) || length(log_like) != N) {
-      cat("ERROR: loglikehood function returned wrong shape for model:", models[M],"length:", length(log_like),"expected:", N,'\n')
-      log_like <- rep(-Inf, N)
-    }
+   # if (!is.numeric(log_like) || length(log_like) != N) {
+   #   cat("ERROR: loglikehood function returned wrong shape for model:", models[M],"length:", length(log_like),"expected:", N,'\n')
+   #   log_like <- rep(-Inf, N)
+   #}
+    log_like[!is.finite(log_like)] <- -Inf
     
-    check_nonfin <- which(!is.finite(log_like))
-    if(length(check_noninf) > 0){
-      log_like[check_noninf] <- -Inf
-    } # MK: Checking for NA's
+    #check_noninf <- which(!is.finite(log_like))
+    #if(length(check_noninf) > 0){
+    #  log_like[check_noninf] <- -Inf
+    #} # MK: Checking for NA's
+    
+    
+    theta_exp <- exp(theta[,,M])
+    cat(paste('Beta Range:', min(theta_exp[,1], na.rm = T), 'to', max(theta_exp[,1], na.rm = T), '\n'))
+    cat(paste('Gamma Range:', min(theta_exp[,2], na.rm = T), 'to', max(theta_exp[,2], na.rm = T), '\n'))
+    cat(paste('Epsilon Range:', min(theta_exp[,3], na.rm = T), 'to', max(theta_exp[,3], na.rm = T), '\n'))
+    cat(paste('Th Range:', min(theta_exp[,4], na.rm = T), 'to', max(theta_exp[,4], na.rm = T), '\n'))
+    cat(paste('Number of finite likelihoods:', sum(is.finite(log_like)), 'out of', N,'\n'))
+    
+    
+    cat(paste('Is current normalized weight(before re-weighting) W[,M] NA anywhere?', any(is.na(W[,M])), 'any NaN?', any(is.nan(W[,M])),'\n'))
+    
     #  Re-weight
     w[,M] = W[,M] * exp(log_like)
+    
+    cat(paste('Any new weights after updating w[,M] NA anywhere?', any(is.na(w[,M])), 'any NaN?', any(is.nan(w[,M])),'\n'))
+    
+    sum_w <- sum(w[, M])
+    cat(paste('Sum of Weights:', sum_w, '\n'))
+    
+    if(is.na(sum_w) || is.nan(sum_w) || !is.finite(sum_w) || sum_w == 0){
+      cat(paste('Weights are 0 or invalid for Model:', models[M], 'at iteration', i,'\n'))
+      cat(paste('sum_w=', sum_w,'is.na = ', is.na(sum_w)))
+      cat('Now resetting particles to prior dsn\n')
+      if(models[M] %in% 1:2){
+        theta[,,M] <- cbind(
+        rnorm(N, prior_mean, prior_std), # MK: beta
+        rnorm(N, prior_mean, prior_std), # MK: gamma
+        rnorm(N, prior_mean, prior_std), # MK: epsilon
+        rnorm(N, prior_mean, prior_std), # MK: Th
+        rnorm(N, prior_mean, prior_std) # MK: delta
+    )
+      }else{
+        theta[,,M] <- cbind(
+      rnorm(N, prior_mean, prior_std), # MK: beta
+      rnorm(N, prior_mean, prior_std), # MK: gamma
+      rnorm(N, prior_mean, prior_std), # MK: epsilon
+      rnorm(N, prior_mean, prior_std), # MK: Th
+      rep(0, N) # MK: Delta vector = 0 since matrix of 5 is needed. 
+    )
+      }
+      W[,M] = rep(1/N, N)
+      w[,M] = rep(1/N, N)
+      ESS[M] = N
+      log_Z[M] = log_Z[M]
+      cat(paste('Model', models[M], 'ESS:', ESS[M], '\n'))
+      next
+    }
+    
     log_Z[M] = log_Z[M] + log(sum(w[,M]))
                           
     # Normalise weights
     W[,M] = w[,M]/sum(w[,M])
+    
+    if(any(is.na(W[,M])) || any(is.nan(W[,M])) || any(!is.finite(W[,M]))){
+      cat(paste('Error: NAs in normalized weights for model:', models[M]))
+    bad_its <- which(is.na(W[,M]) | is.nan(W[,M]) | !is.finite(W[,M]))
+    cat(paste('Number of invalid weights:', length(bad_its), '\n'))
+      next
+    }
                           
     # Compute ESS at time t
     ESS[M] = 1/ sum(W[,M]^2)
     cat(paste("Model", models[M], "ESS:", floor(ESS[M])), sep="\n")
     
     if (ESS[M] < E){
-      source('CopyOfresample_then_move.R')
+      source('Mia_Files/CopyOfresample_then_move.R')
     }
   }
+    cat(" ", sep ="\n")  
+  }
   
-cat(" ", sep ="\n")  
 
-}
+
 
 
 
@@ -203,7 +261,7 @@ for (M in 1:K){
   cat(paste("Model", models[M],":"), sep ="\n")
   
   if (ESS[M] != N){
-    source('resample_then_move.R')
+    source('Mia_Files/CopyOfresample_then_move.R')
   }
   
   # Display log evidence
@@ -217,7 +275,7 @@ for (M in 1:K){
   cat(paste('log D-posterior precision =', log_D_post_prec), sep="\n")
   
   # Plot marginal posterior distributions
-  source('SMC_plot.R')
+  source('Mia_Files/CopyOfSMC_plot.R')
   cat(" ", sep ="\n")  
 }
 

@@ -180,31 +180,50 @@ log_prior <- function(x, model){
 #
 ###########################################################
 
-
+# Safeguards added
 ode_Hollings <- function(tau, N, parms) {
   
   
   phi <- parms$phi # MK
   model <- parms$model #MK
   
-  beta_ode <- phi[1] # MK
-  gamma_ode <- phi[2] # MK
-  epsilon_ode <- phi[3] # MK
-  Th_ode <- phi[4] # MK
+  if(length(phi) < 4) {
+    stop(paste('phi has wrong length:', length(phi)))
+  }
   
+  beta_ode <- as.numeric(phi[1]) # MK
+  gamma_ode <- as.numeric(phi[2]) # MK
+  epsilon_ode <- as.numeric(phi[3]) # MK
+  Th_ode <- as.numeric(phi[4]) # MK
+  
+  if (!is.finite(beta_ode) || !is.finite(gamma_ode) || !is.finite(epsilon_ode) || !is.finite(Th_ode)){
+    print(list(
+      beta = beta_ode, 
+      gamma = gamma_ode,
+      epsilon = epsilon_ode,
+      Th = Th_ode,
+      model = model,
+      time = tau
+    ))
+    stop("Non-finite parameter")
+  }
   a_ode <- beta_ode*gamma_ode*epsilon_ode # MK
   
   
   if (model %in% c(1,3)){
     # Equation for Holling's Type II model
-    f <- - a_ode*N/(1+a_ode*Th_ode*N) # MK
-    return(list(f))
+    denom <- 1 + a_ode*Th_ode*N
+    denom <- pmax(denom, 1e-12)
+    f <- - a_ode*N/denom # MK
+    return(list(as.numeric(f)))
   }
   
   else if (model %in% c(2,4)){
     # Equation for Holling's Type III model
-    f <- - a_ode*N^2/(1+a_ode*Th_ode*N^2)
-    return(list(f))
+    denom <- (1+a_ode*Th_ode*N^2)
+    denom <- pmax(denom, 1e-12)
+    f <- - a_ode*N^2/denom
+    return(list(as.numeric(f)))
   }
   
   else 
@@ -228,23 +247,43 @@ ode_Hollings <- function(tau, N, parms) {
 #
 ############################################################################################
 
-
+# SAFEGUARDS ADDED
 solve_ode_Hollings <- function(phi, N0, observation_time, model) {
   
   solution <- matrix(NA, nrow = nrow(phi), ncol = length(N0))
-  Hol.t <- seq(0, observation_time, len = 10) # define the time range in which the ODE will be solved
+  Hol.t <- seq(0, observation_time, length.out = 100) # define the time range in which the ODE will be solved
   
-  for (i in 1:nrow(phi)){
-
-    res <- ode(N0, Hol.t, ode_Hollings, parms = list(phi = phi[i, ], model = model))  # solve the ODE
+  for (i in 1:nrow(phi)){ # safeguards
     
-    if (inherits(res, "try-error") || anyNA(res)){
+    if(ncol(phi) < 4){
+      cat('STOP: phi has', ncol(phi),'columns')
+      solution[i,] <- NA
       next
     }
-    sol_test <- res[nrow(res), 2:ncol(res)]
-    sol_test[i,] <- res[nrow(res),2:ncol(res), drop = FALSE]# only look at the final end point since this is the information that is relevant to the obervational data 
+    if (any(!is.finite(phi[i, ])) || any(phi[i, ] < 0) || phi[i,1] < 1e-10 || phi[i,1] > 1e6 || phi[i,2] < 1e-10 || phi[i,2] > 1e6){
+      solution[i, ] <-NA
+      next
+    }
+    if (phi[i, 1] < 1e-10 || phi[i,1] > 1e6 ||
+        phi[i, 2] < 1e-10 || phi[i,2] > 1e6 ||
+        phi[i, 3] < 1e-10 || phi[i,3] > 1e6 ||
+        phi[i, 4] < 1e-10 || phi[i,4] > 1e6 ||){
+      solution[i, ] <- NA
+      next
+    }
     
+    res <- try(ode(N0, Hol.t, ode_Hollings, parms = list(phi = phi[i, ], model = model), rtol = 1e-2,
+               atol = 1e-4, maxsteps = 5000), silent = T)  # solve the ODE
+    
+    if (inherits(res, "try-error")){
+      solution[i, ] <- NA
+      next
+    }
+    
+    sol_test <- as.numeric(res[nrow(res), -1])
+    #sol_test[i,] <- res[nrow(res),2:ncol(res), drop = FALSE]# only look at the final end point since this is the information that is relevant to the obervational data 
     if (anyNA(sol_test) || any(!is.finite(sol_test))){
+      solution[i, ] <- NA
       next
     }
   
@@ -256,6 +295,41 @@ solve_ode_Hollings <- function(phi, N0, observation_time, model) {
   
 }
 
+# MK: testing if the issue is the ode solver
+test_ode_solver <- function(){
+  beta_test <- 0.5
+  gamma_test <- 0.7
+  epsilon_test <- 0.9
+  Th_test <- 0.7
+  a_test <- beta_test*gamma_test*epsilon_test
+  
+  phi_test <- matrix(c(beta_test, gamma_test, epsilon_test, Th_test), nrow = 1)
+  
+  N_test <- c(10, 50, 100, 200)
+  
+  for(N0 in N_test){
+    result <- solve_ode_Hollings(phi_test, N0 = N0, observation_time = 24, model = 1)
+    cat(paste('Test N0 =', N0,' Test Result=', result, '\n'))
+  }
+  
+  for(M in 1:K){
+    cat(paste('Model', M,'\n'))
+    for(p in 1:min(5,N)){
+      phi_p <- exp(theta[p,,M])
+      cat(paste('Particle:', p,'beta=', phi_p[1],'gamma=',phi_p[2],
+                'epsilon=', phi_p[3],'Th=',phi_p[4], '\n'))
+      phi_col <- matrix(phi_p[1:4], nrow= 1)
+      result <- solve_ode_Hollings(phi_col, N0 = data[i,1], observation_time = 24, model = models[M])
+      cat(paste('ODE Result:',result,'\n'))
+    }
+  }
+  
+}
+
+data_subset <- data[1:i, drop = F]
+if(i == 1){
+  test_ode_solver()
+}
 
 #######################################################################################################################
 # Function name: loglikelihood_Hollings
@@ -275,50 +349,65 @@ solve_ode_Hollings <- function(phi, N0, observation_time, model) {
 
 loglikelihood_Hollings <- function(phi, data, observation_time, model) {
   
-    beta_new <- phi[,1] # MK: New parameter: beta = encounter rate 
-    gamma <- phi[,2] # MK: New parameter: gamma = probability of detection
-    epsilon <- phi[,3] # MK: New parameter: epsilon = attack efficiency
-    Th <- phi[,4] # MK: original parameter: handling time
+    N_parts <- nrow(phi)
+    loglik <- numeric(N_parts)
     
-    a <- beta_new*gamma*epsilon # MK
-    
-    if (model %in% 1:2) {
-      delta <- phi[,5]
-    } # MK
-    
-    phi_new <- cbind(a, Th)
-    
-    N <- unique(data[,1]) 
-    ic <- match(data[,1], N)
-    v <- solve_ode_Hollings(phi_new, N0=N, observation_time = observation_time, model = model) %>% matrix(ncol = length(N))
-    if (anyNA(v) || any(!is.finite(pred))) {
-      return(-Inf)
-    }
-    V <- v[,ic, drop = FALSE]
-  
-    # determine probability of prey being eaten
-    ratio <- t(V) * 1/N[ic]
-    prob <- 1-ratio
-      
+    N <- data[,1]
     n.eaten <- data[,2]
     
-    if (model %in% 1:2){
-     
-       mu <- prob
+    beta_new <- phi[p,1] # MK: New parameter: beta = encounter rate 
+    gamma <- phi[p,2] # MK: New parameter: gamma = probability of detection
+    epsilon <- phi[p,3] # MK: New parameter: epsilon = attack efficiency
+    Th <- phi[p,4] # MK: original parameter: handling time
       
-      # Determine parameters for beta-binomial distribution
-      alpha <- mu / delta # MK
-      beta <- ratio / delta # MK
+    a <- beta_new*gamma*epsilon # MK
       
-      loglik <- colSums(log_betabinpdf(data[,1], n.eaten, alpha, beta))
-      loglik <- matrix(loglik, ncol = 1)
+    if (model %in% 1:2) {
+        delta <- phi[p,5]
+      } # MK
+      
+    phi_new <- matrix(c(beta_new, gamma, epsilon, Th), nrow = 1) # MK
+      
+    v <- solve_ode_Hollings(phi_new, N0=N, observation_time = observation_time, model = model) %>% matrix(ncol = length(N))
+    v <- matrix(v, nrow = N_parts, ncol= length(N))
+    
+    for (p in 1:N_parts){
+      v_p <- v[p,]
+      if (anyNA(v_p) || any(!is.finite(v_p))) {
+        loglik[p] <- -Inf
+        next
+      }
       
       
-    }   else {
+      # determine probability of prey being eaten
+      ratio <- v_p / N
+      prob <- 1-ratio
+      
+      if(any(prob < 0 ) || any(prob > 1) || any(!is.finite(prob))){
+        loglik[p] <- -Inf
+        next
+        
+      }
+      
+      if (model %in% 1:2){
+        
+        mu <- prob
+        
+        # Determine parameters for beta-binomial distribution
+        alpha <- mu / delta[p] # MK
+        beta <- ratio / delta[p] # MK
+        
+        loglik[p] <- sum(log_betabinpdf(N, n.eaten, alpha, beta))
 
-      # For models 3 and 4
-       loglik <- colSums(log_binpdf(data[,1], n.eaten, prob))
+        
+        
+      }   else {
+        
+        # For models 3 and 4
+        loglik[p] <- sum(log_binpdf(N, n.eaten, prob))
+      }
     }
+    
     
   return(loglik)
 }
