@@ -267,7 +267,7 @@ solve_ode_Hollings <- function(phi, N0, observation_time, model) {
     if (phi[i, 1] < 1e-10 || phi[i,1] > 1e6 ||
         phi[i, 2] < 1e-10 || phi[i,2] > 1e6 ||
         phi[i, 3] < 1e-10 || phi[i,3] > 1e6 ||
-        phi[i, 4] < 1e-10 || phi[i,4] > 1e6 ||){
+        phi[i, 4] < 1e-10 || phi[i,4] > 1e6 ){
       solution[i, ] <- NA
       next
     }
