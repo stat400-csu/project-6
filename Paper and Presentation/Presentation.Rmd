@@ -31,21 +31,17 @@ where N = prey density,
       a = attack rate,
       $T_{h}$ = handling time
       
-<\div>
 
-## Objectives
-
-**The Issue:** These biological behaviors look mathematically identical at high prey densities.
-
-**The Goal:** Distinguish the correct model using the fewest experiments possible.
-
-</div>
 
 ## Visualizing the Challenge
 
-```{r, echo=FALSE, out.width="80%", fig.align='center'}
+**The Issue:** These biological behaviors look mathematically identical at high prey densities.
+
+```{r, echo=FALSE, out.width="60%", fig.align='center'}
 knitr::include_graphics("Statistical Challenge.png")
 ```
+
+**The Goal:** Distinguish the correct model using the fewest experiments possible. 
 
 
 ## Slide 2: The Results - Juliette
@@ -53,6 +49,9 @@ knitr::include_graphics("Statistical Challenge.png")
 Stuff blah blah plus loading in graphs after downloading them
 
 ## Slide 3: The Results - Mia
+
+
+
 
 ## Why Move Steps are Used
 * Sequential Monte Carlo involves taking weighted samples (particles) and iteratively changing them to more closely match a target distribution.

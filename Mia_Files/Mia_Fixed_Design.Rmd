@@ -46,7 +46,7 @@ source('Fixed_additional_functions.R')
 ##############################################################
 
 # Specify method of determining next design point
-R <- 1
+R <- 0
 
 # Methods (R):
 # 0 - selects design point randomly and generates data

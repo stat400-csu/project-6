@@ -20,7 +20,7 @@ names(plot_data) <- c('a', 'Th', 'lambda')
 figure_A <- ggplot(plot_data, aes(a)) +
   geom_density(lwd = 1.1, fill = 'blue', alpha = 0.3) + scale_x_continuous(limits = c(0,4), breaks = c(0,1,2,3,4)) +
   xlab(TeX('$a$')) + ylab('Density') +
-  theme(axis.title=element_text(size=20,face="bold"), axis.title.y.left = element_text(size = 10, face='bold')) + geom_vline(xintercept = a, lty = 2) + annotate('text',x = a+0.07, y = 0.35, label = 'True a value', angle = 90)
+  theme(axis.title=element_text(size=20,face="bold"), axis.title.y.left = element_text(size = 10, face='bold')) + geom_vline(xintercept = a, lty = 2) + annotate('text',x = a+0.07, y = 0.5, label = 'True a value', angle = 90)
 
 # Plot for Th
 figure_B <- ggplot(plot_data, aes(Th)) +
