@@ -65,7 +65,7 @@ if (R %in% c(0:3,5)){
   Th <- 0.7
   lambda <- 0.5
   parameter_set <- matrix(c(a, Th, lambda), nrow = 1) %>% log
-  M_true <- 1
+  M_true <- 3
 }
 
 # Assign values to parameters (Input required for these values)
@@ -206,7 +206,7 @@ for (M in 1:K){
   cat(paste('log D-posterior precision =', log_D_post_prec), sep="\n")
   
   # Plot marginal posterior distributions
-  source('SMC_plot.R')
+  source('SMC_plot_Jake_Copy.R')
   cat(" ", sep ="\n")  
 }
 
