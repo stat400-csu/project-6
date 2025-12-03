@@ -3,8 +3,12 @@ title: "Mia_Fixed_Design"
 output: html_document
 ---
 
+# Author's Code, edits are noted with MK
 ```{r setup, include=FALSE}
 # Loading in packages
+
+rm(list = ls())
+set.seed(400)
 
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
@@ -17,14 +21,16 @@ library(tidyr)
 library(ggpubr)
 library(ggthemes)
 library(latex2exp)
+library(gridExtra)
 
 source('Fixed_generate_data.R')
 source('Fixed_additional_functions.R')
 
 ```
 
-Author's Code (Moffat) with edits marked MK
 ```{r}
+
+
 #-----------------------------------------------------------------------------------------------#
 # Script Name: SMC_algorithm                                                                    #
 # Author: Hayden Moffat                                                                         #
@@ -38,9 +44,9 @@ Author's Code (Moffat) with edits marked MK
 ##############################################################
 # PROBLEM AND SMC SET UP (INPUT REQUIRED)
 ##############################################################
-set.seed(400)
+
 # Specify method of determining next design point
-R <- 0
+R <- 1
 
 # Methods (R):
 # 0 - selects design point randomly and generates data
@@ -69,18 +75,18 @@ if (R %in% c(0:3,5,6)){
   Th <- 0.7
   lambda <- 0.5
   parameter_set <- matrix(c(a, Th, lambda), nrow = 1) %>% log
-  M_true <- 4
+  M_true <- 1
 }
 
 
 
 # Assign values to parameters (Input required for these values)
-I <- 25 # number of data points
+I <- 10 # number of data points
 K <- length(models) # number of models
-N <- 500 # number of particles for SMC
+N <- 200 # number of particles for SMC
 E <- N/2 # threshold for ESS for SMC
 Nmin <- 1 # min value in the discrete design space
-Nmax <- 300 # max value in the discrete design space
+Nmax <- 100 # max value in the discrete design space
 time <- 24 # length of time that predator has access to prey in hours
 tol <- 2 # tolerance for ESS which indicates when the move step might fail (see move step script for more detail)
 
@@ -161,7 +167,7 @@ for (i in 1:I){
     data[i,] <- dataset[i,] # take all design point and observations from example dataset
   }
   else if(R == 6){ # MK: new experiment (fixed)
-    if(i == 1){
+    if(i == 1){ # MK: Generate fixed design points
     data[,1] <- sample(Nmin:Nmax, I, replace = T)
     cat('Fixed Design: All designs chosen\n')
     cat('design points:\n')
@@ -200,7 +206,7 @@ cat(" ", sep ="\n")
 cat('Design Summary')
 cat('Design points used:\n')
 print(data[i,1])
-cat('\n 0 observations:\n')
+cat('\n Observations:\n')
 print(data[i,2])
 write.csv(data, paste0('results_R', R, '.csv'), row.names = F) # MK: Saving results
 
@@ -241,4 +247,54 @@ for (M in 1:K){
   cat(paste(modeltype[[models[M]]], "probability:", posterior_model_prob[M]), sep="\n")
 }
 
+```
+
+```{r }
+theta_R6 <- theta
+log_Z_R6 <- log_Z
+
+theta <- theta_R6
+M <- 1
+source('Single_Plot.R')
+
+
+```
+
+```{r}
+theta_R6 <- theta
+log_Z_R6 <- log_Z
+log_post_prob_R0 <- posterior_model_prob
+
+
+# MK: Grabbing posterior probabilities when R = 1 for each model when Model 1 is set to true.
+post_prob_model1_R1 <- posterior_model_prob[1]
+post_prob_model2_R1 <- posterior_model_prob[2]
+post_prob_model3_R1 <- posterior_model_prob[3]
+post_prob_model4_R1 <- posterior_model_prob[4]
+
+# MK: Grabbing log evidence and log d-posterior precisions for R=1 and model 1
+log_est_evi_R1_model1 <- log_Z[1]
+log_dpost_prec_R1_model1 <- -log(det(cov(exp(theta[,,1]))))
+
+# MK: Grabbing posterior probabilities when R = 0 for each model when Model 1 is set to true.
+
+post_prob_model1_R0 <- posterior_model_prob[1]
+post_prob_model2_R0 <- posterior_model_prob[2]
+post_prob_model3_R0 <- posterior_model_prob[3]
+post_prob_model4_R0 <- posterior_model_prob[4]
+
+# MK: Grabbing log evidence and log d-posterior precisions for R=0 and model 1
+log_est_evi_R0_model1 <- log_Z[1]
+log_dpost_prec_R0_model1 <- -log(det(cov(exp(theta[,,1]))))
+
+# MK: Grabbing posterior probabilities when R = 6 for each model when Model 1 is set to true.
+
+post_prob_model1_R6 <- posterior_model_prob[1]
+post_prob_model2_R6 <- posterior_model_prob[2]
+post_prob_model3_R6 <- posterior_model_prob[3]
+post_prob_model4_R6 <- posterior_model_prob[4]
+
+# MK: Grabbing log evidence and log d-posterior precisions for R=6 and model 1
+log_est_evi_R6_model1 <- log_Z[1]
+log_dpost_prec_R6_model1 <- -log(det(cov(exp(theta[,,1]))))
 ```
