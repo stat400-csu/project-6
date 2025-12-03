@@ -20,19 +20,19 @@ names(plot_data) <- c('a', 'Th', 'lambda')
 figure_A <- ggplot(plot_data, aes(a)) +
   geom_density(lwd = 1.1, fill = 'blue', alpha = 0.3) +
   xlab(TeX('$a$')) +
-  theme(axis.title=element_text(size=20,face="bold"))
+  theme(axis.title=element_text(size=20,face="bold")) + geom_vline(xintercept = a, lty = 2) + annotate('text',x = a+0.2, y = 1, label = 'True a value', angle = 90)
 
 # Plot for Th
 figure_B <- ggplot(plot_data, aes(Th)) +
   geom_density(lwd = 1.1, fill = 'red', alpha = 0.3) +
   xlab(TeX('$T_{h}$')) +
-  theme(axis.title=element_text(size=20,face="bold"))
+  theme(axis.title=element_text(size=20,face="bold")) + geom_vline(xintercept = Th, lty = 2)+ annotate('text',x = Th+ 0.01, y = 3, label = 'True Th value', angle = 90)
 
 # Plot for lambda
 figure_C <- ggplot(plot_data, aes(lambda)) +
   geom_density(lwd = 1.1, fill = 'green', alpha = 0.3) +
   xlab(expression(lambda)) +
-  theme(axis.title=element_text(size=20,face="bold"))
+  theme(axis.title=element_text(size=20,face="bold")) + geom_vline(xintercept = lambda, lty = 2)+ annotate('text',x = lambda+ 0.01, y = 2, label = 'True lambda value', angle = 90)
 
 if (models[M] %in% c(1,2)){
   plot <- ggarrange(figure_A, figure_B, figure_C, nrow = 1) %>% 

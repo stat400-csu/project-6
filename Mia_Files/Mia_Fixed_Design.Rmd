@@ -64,12 +64,12 @@ if (R %in% 4:5){
 }
 
 #  Select "true values" of parameters for methods that require it
-if (R %in% c(0:3,5)){
+if (R %in% c(0:3,5,6)){
   a <- 0.5
   Th <- 0.7
   lambda <- 0.5
   parameter_set <- matrix(c(a, Th, lambda), nrow = 1) %>% log
-  M_true <- 1
+  M_true <- 4
 }
 
 
@@ -160,7 +160,7 @@ for (i in 1:I){
   else if(R == 4){
     data[i,] <- dataset[i,] # take all design point and observations from example dataset
   }
-  else if (R == 6){ # MK: new experiment (fixed)
+  else if(R == 6){ # MK: new experiment (fixed)
     if(i == 1){
     data[,1] <- sample(Nmin:Nmax, I, replace = T)
     cat('Fixed Design: All designs chosen\n')
@@ -171,7 +171,7 @@ for (i in 1:I){
     
     data[i,2] <- generate_data(data[i,1], parameter_set, observation_time = time, M_true)[[1]]
     
-    cat(paste('Generated observation: n_eaten=', data[i,2]))
+    cat(paste('Generated observation: n_eaten =', data[i,2],'\n'))
   }
 
   data_subset <- data[1:i,, drop = FALSE] # current data available
@@ -200,7 +200,7 @@ cat(" ", sep ="\n")
 cat('Design Summary')
 cat('Design points used:\n')
 print(data[i,1])
-cat('\n0observations:\n')
+cat('\n 0 observations:\n')
 print(data[i,2])
 write.csv(data, paste0('results_R', R, '.csv'), row.names = F) # MK: Saving results
 
@@ -236,6 +236,7 @@ for (M in 1:K){
 
 # Calculate Posterior Model Probabilities
 posterior_model_prob = exp(log_Z - logsumexp(log_Z,0))
+cat(paste('Using Method:',R,'\n'))
 for (M in 1:K){
   cat(paste(modeltype[[models[M]]], "probability:", posterior_model_prob[M]), sep="\n")
 }
