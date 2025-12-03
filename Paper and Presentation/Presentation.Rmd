@@ -48,7 +48,14 @@ knitr::include_graphics("Statistical Challenge.png")
 
 Stuff blah blah plus loading in graphs after downloading them
 
-## Slide 3: The Results - Mia
+## Slide 3: Setup For Determining Best Experimental Design
+
+**Goal**: Find the best method of determining experimental design points that maximizes posterior probability for true model and accurately estimates the true parameters.
+
+
+
+
+
 
 
 
