@@ -12,7 +12,7 @@ theta[,,M] <- residual_resampling(W[,M], N, theta[,,M])
 source('Fixed_Move_Step.R', local = TRUE) #Juliette added local = TRUE
 
 # Determine the number of unique particles
-n_unique = theta[,,M] %>% as.data.frame %>% as.tbl %>% distinct %>% nrow # d
+n_unique = theta[,,M] %>% as.data.frame %>% tibble::as.tibble() %>% distinct %>% nrow # d
 print(paste("Number of unique particles after resampling:", n_unique))
 
 # Reset weights and ESS

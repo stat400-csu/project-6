@@ -1,7 +1,7 @@
 ---
 title: "Sequential Experimental Design for Predator-Prey Models"
 subtitle: "Stat 400 Final Project"
-author: "Juliette Dashe, Jake Brisnehan, Mia Krauss"
+author: "Juliette Dashe, Jake Brisnehan, Mia Krause"
 date: "`r Sys.Date()`"
 output: 
   ioslides_presentation:
@@ -19,9 +19,21 @@ knitr::opts_chunk$set(echo = FALSE)
 **How do predators respond to prey density?**
 
 * <span style="color: blue">**Type II (Glutton):**</span> Eats fast, gets full quickly.
+$$
+\frac{dN}{dt} =  -\frac{aN}{1+aT_{h}N}
+$$
 * <span style="color: red">**Type III (Learner):**</span> Slow start (learning), accelerates, then gets full.
+$$
+\frac{dN}{dt} = -\frac{aN^2}{1+aT_{h}N^2}
+$$
 
-<br>
+where N = prey density,
+      a = attack rate,
+      $T_{h}$ = handling time
+      
+<\div>
+
+## Objectives
 
 **The Issue:** These biological behaviors look mathematically identical at high prey densities.
 

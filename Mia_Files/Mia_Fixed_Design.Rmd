@@ -46,7 +46,7 @@ source('Fixed_additional_functions.R')
 ##############################################################
 
 # Specify method of determining next design point
-R <- 1
+R <- 6
 
 # Methods (R):
 # 0 - selects design point randomly and generates data
@@ -238,6 +238,8 @@ for (M in 1:K){
   source('Fixed_SMC_plot.R')
   cat(" ", sep ="\n")  
 }
+theta_R0 <- theta
+log_z_R0 <- log_Z
 
 
 # Calculate Posterior Model Probabilities
@@ -246,6 +248,7 @@ cat(paste('Using Method:',R,'\n'))
 for (M in 1:K){
   cat(paste(modeltype[[models[M]]], "probability:", posterior_model_prob[M]), sep="\n")
 }
+
 
 ```
 
@@ -297,4 +300,7 @@ post_prob_model4_R6 <- posterior_model_prob[4]
 # MK: Grabbing log evidence and log d-posterior precisions for R=6 and model 1
 log_est_evi_R6_model1 <- log_Z[1]
 log_dpost_prec_R6_model1 <- -log(det(cov(exp(theta[,,1]))))
+
+
+
 ```
