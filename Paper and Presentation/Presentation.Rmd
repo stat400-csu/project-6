@@ -211,4 +211,10 @@ $$R_m \ge \frac{\log{c}}{\log{(1-p)}}$$
 
 * Because these particles are drawn randomly, having two steps should help keep them from pulling distributions in the wrong direction.
 
-## Slide 5: Conclusion
+
+
+
+
+
+
+

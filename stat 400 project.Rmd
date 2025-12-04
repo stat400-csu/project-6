@@ -20,6 +20,7 @@ library(ggpubr)
 library(ggthemes)
 library(latex2exp)
 
+
 # Loading in functions created by Moffat
 source('generate_data.R')
 source('additional_functions.R')
@@ -193,16 +194,20 @@ set.seed(400)
 cat("Running Original Particle Simulation (N=500)...\n")
 # CHANGE OF VARIABLE 1: N = 500
 results_N_original <- run_smc_simulation(input_N = 500, input_R = 0, input_seed = 400)
+
+## timed run took 3:33
 ```
 
 ```{r run_experiments, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
 # --- EXPERIMENT 1: Super low N ----
 # Hypothesis: Low N will result in unstable probabilities (High Monte Carlo Error).
 # We keep R=0 (Random) constant to isolate the effect of N.
-set.seed(400)
+
 cat("Running Low Particle Simulation (N=50)...\n")
-#  N = 50
-results_N_lowest <- run_smc_simulation(input_N = 30, input_R = 0, input_seed = 400)
+#  N = 30
+results_N_lowest <- run_smc_simulation(input_N = 30, input_R = 0, input_seed = 23)
+
+## timed run took 0:16
 
 ```
 
@@ -210,12 +215,16 @@ results_N_lowest <- run_smc_simulation(input_N = 30, input_R = 0, input_seed = 4
 # --- EXPERIMENT 1: SENSITIVITY TO PARTICLE COUNT (N) ---
 # Hypothesis: Low N will result in unstable probabilities (High Monte Carlo Error).
 # We keep R=0 (Random) constant to isolate the effect of N.
-set.seed(400)
+
 cat("Running Medium Particle Simulation (N=100)...\n")
 # CHANGE OF VARIABLE 1: N = 100
-results_N_medium <- run_smc_simulation(input_N = 100, input_R = 0, input_seed = 400)
+results_N_medium <- run_smc_simulation(input_N = 100, input_R = 0, input_seed = 88)
+
+##timed run took 1:12
 
 ```
+
+
 ```{r run_experiments, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
 # --- EXPERIMENT 1: SENSITIVITY TO PARTICLE COUNT (N) ---
 # Hypothesis: Low N will result in unstable probabilities (High Monte Carlo Error).
@@ -223,8 +232,9 @@ results_N_medium <- run_smc_simulation(input_N = 100, input_R = 0, input_seed = 
 set.seed(400)
 cat("Running High Particle Simulation (N=1000)...\n")
 # CHANGE OF VARIABLE 1: N = 1000
-results_N_high <- run_smc_simulation(input_N = 1000, input_R = 0, input_seed = 400)
+results_N_high <- run_smc_simulation(input_N = 1000, input_R = 0, input_seed = 166)
 
+## timed run took 4:54 
 ```
 
 
@@ -304,7 +314,7 @@ lines(N_prey, Type3, col = "red", lwd = 3, lty = 2)
 legend("bottomright", legend = c("Type II (Glutton)", "Type III (Learner)"),
        col = c("blue", "red"), lty = c(1, 2), lwd = 3)
 
-# 4. SIMULATE "NOISY" DATA (The Challenge)
+# 4. SIMULATE "NOISY" DATA 
 
 # Scenario A: Bad Design (High Density)
 # Where the lines overlap, data is useless.
@@ -327,5 +337,56 @@ arrows(good_N, good_point, good_N, 5, length=0.1, col="green4")
 text(good_N+2, 5, "We need data\nHERE", pos=4, col="green4", font=2)
 ```
 
+```{r}
+
+
+# 1. Create the data frame (based on the previous table)
+runtime_data <- data.frame(
+  N = c(30, 100, 500, 1000), 
+  Runtime_M_SS = c("0:16", "1:12", "3:33", "4:54")
+)
+
+# 2. Function to convert M:SS to total seconds
+convert_to_sec <- function(time_str) {
+  parts <- as.numeric(strsplit(time_str, ":")[[1]])
+  return(parts[1] * 60 + parts[2])
+}
+
+# 3. Add the Runtime in seconds for plotting
+runtime_data <- runtime_data %>%
+  mutate(Runtime_sec = sapply(Runtime_M_SS, convert_to_sec))
+
+
+
+# Find the maximum runtime value to calculate the needed expansion
+max_runtime <- max(runtime_data$Runtime_sec)
+
+# 4. Create the plot
+runtime_plot <- ggplot(runtime_data, aes(x = factor(N), y = Runtime_sec, group = 1)) +
+  
+  geom_bar(stat = "identity", fill = "skyblue3") +
+  
+  # Add the exact time values on top of the bars
+  geom_text(aes(label = Runtime_M_SS), vjust = -0.5, size = 5) +
+  
+  geom_line(color = "red", size = 1) + 
+  geom_point(color = "red", size = 3) +
+  
+
+  scale_y_continuous(
+    limits = c(0, max_runtime * 1.15), # Set the max limit to 15% above the highest bar
+    expand = expansion(mult = c(0, 0.05)) # Ensure the bottom starts at 0 and adds a little top padding
+  ) +
+  
+  labs(
+    title = "Computational Cost vs. Particle Count (N)",
+    subtitle = "Runtime increases linearly with N",
+    x = "N (Number of Particles)",
+    y = "Runtime (Seconds)"
+  ) +
+  theme_minimal(base_size = 15)
+
+print(runtime_plot)
 ```
+
 
