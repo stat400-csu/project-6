@@ -31,7 +31,7 @@ Author's Code: ANY EDITS HAVE COMMENT WITH "JD"
 ```{r}
 set.seed(400)
 ## MAKING AUTHOR'S CODE INTO A FUNCTION so I can use other values later, commenting out utility plots 
-run_smc_simulation <- function(input_N = 500, input_R = 0, input_I = 15, input_seed = 400) { #JD changed I from 25 to 15 for computational purposes and made into a function
+run_smc_simulation <- function(input_N = 500, input_R = 0, input_I = 25, input_seed = 400) { #JD made original code into function
   
   # 1. SETUP PARAMETERS
   set.seed(400) 
@@ -203,7 +203,7 @@ results_N_original <- run_smc_simulation(input_N = 500, input_R = 0, input_seed 
 # Hypothesis: Low N will result in unstable probabilities (High Monte Carlo Error).
 # We keep R=0 (Random) constant to isolate the effect of N.
 
-cat("Running Low Particle Simulation (N=50)...\n")
+cat("Running Low Particle Simulation (N=30)...\n")
 #  N = 30
 results_N_lowest <- run_smc_simulation(input_N = 30, input_R = 0, input_seed = 23)
 
@@ -340,7 +340,7 @@ text(good_N+2, 5, "We need data\nHERE", pos=4, col="green4", font=2)
 ```{r}
 
 
-# 1. Create the data frame (based on the previous table)
+# 1. Create the data frame 
 runtime_data <- data.frame(
   N = c(30, 100, 500, 1000), 
   Runtime_M_SS = c("0:16", "1:12", "3:33", "4:54")
@@ -387,6 +387,42 @@ runtime_plot <- ggplot(runtime_data, aes(x = factor(N), y = Runtime_sec, group =
   theme_minimal(base_size = 15)
 
 print(runtime_plot)
+```
+```{r}
+# R code to compute and display the percent increases
+library(dplyr)
+library(knitr)
+
+runtime_data <- data.frame(
+  N = c(30, 100, 500, 1000), 
+  Runtime_sec = c(16, 72, 213, 294) # Use your calculated seconds
+)
+
+# Calculate the percent increase relative to the previous N value
+percent_increase_data <- runtime_data %>%
+  # Calculate the percentage change using lag()
+  mutate(
+    Prev_N = lag(N),
+    N_Transition = paste0("N=", Prev_N, " -> N=", N),
+    Percent_Increase = ((Runtime_sec - lag(Runtime_sec)) / lag(Runtime_sec)) * 100
+  ) %>%
+  
+
+  filter(!is.na(Prev_N)) %>%
+
+  # Select and format columns
+  mutate(
+    `Percent Increase in Wait Time` = paste0(round(Percent_Increase, 1), "%")
+  ) %>%
+  select(
+    Transition = N_Transition,
+    `Percent Increase in Wait Time`
+  )
+
+# Print the final table
+kable(percent_increase_data, 
+      caption = "Sequential Increase in Computational Cost", 
+      align = 'c')
 ```
 
 

@@ -80,9 +80,93 @@ knitr::include_graphics("pars_table.png")
 
 5) Update model probabilities and repeat
 
-## Slide 2: The Results - Juliette
+## Sensitivity Analysis of Particle Count in SMC
 
-Stuff blah blah plus loading in graphs after downloading them
+**Goal**: Determine the computational efficiency of author's original choice of N = 500 by analyzing cost-benefit trade-off.
+
+* Sequential Monte Carlo methods approximate the parameter posterior distributions using particles. 
+
+* SMC requires a sufficient number of particles (N) to minimize the Monte Carlo Variance without causing excessive computational cost, or runtime.
+
+## Experiment Set Up
+
+Computed marginal posterior distributions for:
+* Binomial and beta binomial 
+* Type 2 and Type 3 functional response modes.
+
+* Kept design strategy constant at R = 0 (random design) to isolate effect of particle count N from the sequential design choices.
+
+* Tested four discrete particle counts: 
+
+$$N \in \{30, 100, 500 \text{ (Author's Choice)}, 1000\}$$
+
+* Due to high computational costs, we only performed a Single-Run Sensitivity Analysis. We will be looking at runtime vs. posterior smoothness results. 
+
+
+## Qualitative Results: N = 30 versus N = 500
+
+<div class="columns">
+
+<div class="column" style="width:49%;">
+<h4 style="text-align: center;">N = 30</h4>
+<img src="N = 30, Type 2.png" width="95%">
+</div>
+
+<div class="column" style="width:49%;">
+<h4 style="text-align: center;">N = 500</h4>
+<img src="N = 500, Type 2.png" width="95%">
+
+</div>
+
+Highly unreliable estimates for N = 30 and multi peaked
+
+
+## Qualitative Results: N = 100 versus N = 500 
+<div class="column" style="width:49%;">
+<h4 style="text-align: center;">N = 100</h4>
+<img src="N = 100, Type 2.png" width="95%">
+</div>
+
+<div class="column" style="width:49%;">
+<h4 style="text-align: center;">N = 500</h4>
+<img src="N = 500, Type 2.png" width="95%">
+</div>
+
+</div>
+
+Improved smoothness for N = 100, still small bumps in the tails
+
+## Qualitative Results: N = 1000 versus N = 500 
+<div class="column" style="width:49%;">
+<h4 style="text-align: center;">N = 1000</h4>
+<img src="N = 1000, Type 2.png" width="95%">
+</div>
+
+<div class="column" style="width:49%;">
+<h4 style="text-align: center;">N = 500</h4>
+<img src="N = 500, Type 2.png" width="95%">
+</div>
+
+</div>
+
+N = 1000 has smoothest distributions, due to the Law of Large Numbers dictating that as N increases, the Monte Carlo variance decreases. We can be confident that N = 1000 and N = 500 are the statistically stable options, but have to take into account computation cost.
+
+
+
+
+## Comparing Run Time 
+
+```{r, echo=FALSE, out.width="50%", fig.align='center'}
+knitr::include_graphics("N size and computational time.png")
+```
+
+```{r, echo=FALSE, out.width="50%", fig.align='center'}
+knitr::include_graphics("percent increase in wait time.png")
+```
+
+## **Overall** 
+For maximal statistical reliability, N = 1000 is desired. But due to computational constraints as well as changes in design (where R is not 0 or random), the author's choice of N = 500 seems like a pragmatic computational compromise. 
+
 
 ## Setup For Determining Best Experimental Design
 
