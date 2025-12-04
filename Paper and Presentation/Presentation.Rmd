@@ -203,13 +203,13 @@ $$R_m \ge \frac{\log{c}}{\log{(1-p)}}$$
 
 * The model of the Type II response (false) is on the left and the model of the Type III (true) response is on the right.
 
-## What Does This Mean?
+## Take Aways
 
-* It appears that overall, having two steps improves the distributions match their true posteriors.
+* It appears that overall, having two steps helps the distributions match their true posteriors more accurately.
 
-* Moffat et al., (2020) explores much better approaches, but these are very expensive.
+* Moffat et al., (2020) explores much better approaches, but these are very expensive. This approach likely increases significantly.
 
-* Because these particles are drawn randomly, having two steps should help keep them from pulling distributions in the wrong direction.
+
 
 
 
