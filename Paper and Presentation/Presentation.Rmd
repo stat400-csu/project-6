@@ -18,11 +18,11 @@ knitr::opts_chunk$set(echo = FALSE)
 
 **How do predators respond to prey density?**
 
-* <span style="color: blue">**Type II (Glutton):**</span> Eats fast, gets full quickly.
+* <span style="color: blue">**Holling's Type II (Glutton):**</span> Eats fast, gets full quickly.
 $$
 \frac{dN}{dt} =  -\frac{aN}{1+aT_{h}N}
 $$
-* <span style="color: red">**Type III (Learner):**</span> Slow start (learning), accelerates, then gets full.
+* <span style="color: red">**Holling's Type III (Learner):**</span> Slow start (learning), accelerates, then gets full.
 $$
 \frac{dN}{dt} = -\frac{aN^2}{1+aT_{h}N^2}
 $$
@@ -46,7 +46,7 @@ knitr::include_graphics("Statistical Challenge.png")
 
 **Before Starting Experiment**: 
 
-<div style= "float:right;position: relative; left: 30px; top: -7px;">
+<div style= "float:right;position: relative; left: 40px; top: -7px;">
 ```{r echo=FALSE, out.width="300px", fig.align='left'}
 
 knitr::include_graphics("model_types.png") 
@@ -57,6 +57,8 @@ knitr::include_graphics("model_types.png")
 * Select a true model, this is the distribution that will be used to sample the number of prey consumed.
 
 * Select true values for the parameters
+
+* Select the number of iterations (I = 25), particles (N = 500), and time (t = 24 hrs)
 
 ```{r, echo=FALSE, out.width="80%", fig.align='left'}
 knitr::include_graphics("pars_table.png")
@@ -74,7 +76,7 @@ knitr::include_graphics("pars_table.png")
 
 4) Compute likelihoods for each model given the simulated data.
 
-5) Update particle weights, and resample if needed.
+5) Update particle weights, and resample if effective sample size (ESS) is below the threshold N/2. ESS is a measure of of the efficiency of a particle set.
 
 5) Update model probabilities and repeat
 
