@@ -30,7 +30,6 @@ $$
 where N = prey density,
       a = attack rate,
       $T_{h}$ = handling time
-      
 
 
 ## Visualizing the Challenge
@@ -43,21 +42,76 @@ knitr::include_graphics("Statistical Challenge.png")
 
 **The Goal:** Distinguish the correct model using the fewest experiments possible. 
 
+## Study Background
+
+**Before Starting Experiment**: 
+
+<div style= "float:right;position: relative; left: 30px; top: -7px;">
+```{r echo=FALSE, out.width="300px", fig.align='left'}
+
+knitr::include_graphics("model_types.png") 
+
+```
+</div>
+
+* Select a true model, this is the distribution that will be used to sample the number of prey consumed.
+
+* Select true values for the parameters
+
+```{r, echo=FALSE, out.width="80%", fig.align='left'}
+knitr::include_graphics("pars_table.png")
+```
+
+## Sequential Bayesian Framework
+
+<img src="methods_descrip_table.png" style="float:right; margin: 10px; width:60%;" />
+
+1) Start with a design point (experiment), which contains the conditions of a single experiment.
+
+2) Draw parameter samples (particles) from the prior distributions
+
+3) Simulate data under each model at that selected design point
+
+4) Compute likelihoods for each model given the simulated data.
+
+5) Update particle weights, and resample if needed.
+
+5) Update model probabilities and repeat
 
 ## Slide 2: The Results - Juliette
 
 Stuff blah blah plus loading in graphs after downloading them
 
-## Slide 3: Setup For Determining Best Experimental Design
+## Setup For Determining Best Experimental Design
 
-**Goal**: Find the best method of determining experimental design points that maximizes posterior probability for true model and accurately estimates the true parameters.
+**Goal**: Explore the best method for determining experimental design points that maximize posterior probability for true model and accurately estimates the true parameters.
 
+```{r, echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("methods_descrip_table.png")
+```
 
+* Due to computational complexity with method 1, the number of iterations and particles were scaled down to 10 and 200, respectively. 
 
+* For this experiment, Model 1 was selected as the true model
 
+## Results - Visual
 
+Marginal Posterior Distributions for Beta Binomial Type 2 Functional Response
+```{r, echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("plot_results.png")
+```
 
+## Results - Quantitative
 
+```{r, echo=FALSE, out.width="100%", fig.align='center'}
+knitr::include_graphics("results_sum.png")
+```
+
+**Overall**: 
+
+* All methods appeared to have relatively similar accuracy when estimating the true parameters
+
+* Method 1 best recovers the true model, Method 0 is uninformative, and Method 6 performed poorly
 
 
 ## Why Move Steps are Used
