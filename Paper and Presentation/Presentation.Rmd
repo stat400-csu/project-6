@@ -40,7 +40,6 @@ where N = prey density,
 knitr::include_graphics("Statistical Challenge.png")
 ```
 
-**The Goal:** Distinguish the correct model using the fewest experiments possible. 
 
 ## Study Background
 
