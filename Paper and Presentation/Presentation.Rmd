@@ -86,11 +86,9 @@ Stuff blah blah plus loading in graphs after downloading them
 
 **Goal**: Explore the best method for determining experimental design points that maximize posterior probability for true model and accurately estimates the true parameters.
 
-```{r, echo=FALSE, out.width="100%", fig.align='center'}
-knitr::include_graphics("methods_descrip_table.png")
-```
-
 * Due to computational complexity with method 1, the number of iterations and particles were scaled down to 10 and 200, respectively. 
+
+* All 3 methods were tested, with the standard true parameters.
 
 * For this experiment, Model 1 was selected as the true model
 
