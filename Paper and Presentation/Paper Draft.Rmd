@@ -19,10 +19,21 @@ library(ggplot2)
 
 # Motivation
 
-motivation
+Moffat et. al (2020) focuses on two predator-prey functional response models by C.S. Hollings, Type II and Type III.  
+<span style="color: black">**Holling's Type II (Glutton):**
+$$
+\frac{dN}{dt} =  -\frac{aN}{1+aT_{h}N}
+$$
+
+<span style="color: black">**Holling's Type III (Learner):**
+$$
+\frac{dN}{dt} = -\frac{aN^2}{1+aT_{h}N^2}
+$$
+
+Both of these model the number of prey consumed in a given time interval, and take inputs of $N$ $=$ prey density, $a$ $=$ attack rate, and $T_{h}$ $=$ handling time, or the amount of time that the predator takes to pursue, subdue, and eat its prey. As N becomes increasingly large, these two models begin to appear identical. Moffat's study aims to provide an algorithm to simulate a range of experimental goals while acknowledging model structure uncertainty.
 
 # Methodology
-## part one
+## Goal
 
 The overarching goal of the sequential experimental design presented in this paper is to efficiently identify the correct functional response model and precisely estimate its parameters. Achieving this goal requires balancing statistical accuracy with computational feasibility.
 
@@ -38,9 +49,9 @@ The goal was to quantify and observe the trade-off between lower and higher, par
 
 ## Experiment 2: Determining the Best Method of Selecting Design Points
 
-One of the purposes of the study involved looking at methods of choosing design points for a predator-prey experiment. Design points are simply the experimental conditions, and in this case, the initial number of prey. The authors lay out a total of six methods, but in this experiment, only two were explored with the addition of a new method. The first method (R=0) involves selecting a design point randomly every experiment, and the second (R=1) selects a design point that maximizes utility for parameter estimation. We introduced a third method (R=6), which involves selecting all of the design points for every experiment up-front. Under this method, design points can not be updated as experiments progress, but also better reflects realistic experimental design as researchers may need to know their resources and timelines before beginning their experimentation. 
+One of the components of the study involved looking at methods of choosing design points for a predator-prey experiment. Design points are simply the experimental conditions, and in this case, the initial number of prey. The authors lay out a total of six methods, but in this experiment, only two were explored with the addition of a new method. The first method (R=0) involves selecting a design point randomly every experiment, and the second (R=1) selects a design point that maximizes utility for parameter estimation. We introduced a third method (R=6), which involves selecting all of the design points for every experiment up-front. Under this method, design points can not be updated as experiments progress, but also better reflects realistic experimental design as researchers may need to know their resources and timelines before beginning their experimentation. 
 
-For this experiment, the goal was to explore which of the three methods maximized the posterior probabilty for the true selected model, as well as best estimated the true parameters. The true model was set to Beta Binomial Type II (Model 1), due the computational weight of method 1, the number of iterations was scaled down to 10, and the number of particles to 200. The true parameters for a, $T_{h}$, and $\lambda$, were kept at 0.5, 0.7, and 0.5, respectively. 
+For this experiment, the goal was to explore which of the three methods maximized the posterior probabilty for the true selected model, as well as best estimated the true parameters. The true model was set to Beta Binomial Type II (Model 1), and due the computational weight of method 1, the number of iterations was scaled down to 10, and the number of particles to 200. The true parameters for a, $T_{h}$, and $\lambda$, were kept at 0.5, 0.7, and 0.5, respectively. 
 
 
 ## Experiment 3: Two-step Move Step
@@ -55,9 +66,9 @@ $$R_m \ge \frac{\log{c}}{\log{(1-p)}}$$
 
 ### Parameter Estimation
 
-Figure N shows the marginal posterior distributions for Model 1. 
+Figure 1 shows the marginal posterior distributions for each parameter under Model 1. 
 
-```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap= 'Figure N'}
+```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap= 'Figure 1'}
 knitr::include_graphics("plot_results.png")
 ```
 
@@ -66,7 +77,7 @@ Based on these plots, there appears to be little differences across methods in r
 ### Posterior Probability 
 
 Figure N shows the posterior probabilty estimations under each method for Model 1 and Model 2, the beta binomial type II and type III, respectively. For model 3 and 4, the probabilities were approximately 0 for every method, so there were omitted to prevent redundancy. 
-```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap = 'Figure N'}
+```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap = 'Figure 2'}
 knitr::include_graphics("results_sum.png")
 ```
 
