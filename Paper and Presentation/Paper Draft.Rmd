@@ -40,7 +40,7 @@ The goal was to quantify and observe the trade-off between lower and higher, par
 
 One of the purposes of the study involved looking at methods of choosing design points for a predator-prey experiment. Design points are simply the experimental conditions, and in this case, the initial number of prey. The authors lay out a total of six methods, but in this experiment, only two were explored with the addition of a new method. The first method (R=0) involves selecting a design point randomly every experiment, and the second (R=1) selects a design point that maximizes utility for parameter estimation. We introduced a third method (R=6), which involves selecting all of the design points for every experiment up-front. Under this method, design points can not be updated as experiments progress, but also better reflects realistic experimental design as researchers may need to know their resources and timelines before beginning their experimentation. 
 
-For this experiment, the true model was set to Beta Binomial Type II (Model 1). Due the computational weight of method 1, the number of iterations was scaled down to 10, and the number of particles to 200. The true parameters for a, $T_{h}$, and $\lambda$, were kept at 0.5, 0.7, and 0.5, respectively. 
+For this experiment, the goal was to explore which of the three methods maximized the posterior probabilty for the true selected model, as well as best estimated the true parameters. The true model was set to Beta Binomial Type II (Model 1), due the computational weight of method 1, the number of iterations was scaled down to 10, and the number of particles to 200. The true parameters for a, $T_{h}$, and $\lambda$, were kept at 0.5, 0.7, and 0.5, respectively. 
 
 
 ## Experiment 3: Two-step Move Step
@@ -53,8 +53,24 @@ $$R_m \ge \frac{\log{c}}{\log{(1-p)}}$$
 
 ## Results: Experiment 2
 
+### Parameter Estimation
 
+Figure N shows the marginal posterior distributions for Model 1. 
 
+```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap= 'Figure N'}
+knitr::include_graphics("plot_results.png")
+```
+
+Based on these plots, there appears to be little differences across methods in regards to how well each estimates the true parameters. Ideally, because method 1 selects design points with the intention of estimating parameters, it should result in the best estimation of those parameters. Apart from estimating parameter $\lambda$, the plots do not reflect this. This may be due to seed randomness, decreasing the particle size, or a combination of both. 
+
+### Posterior Probability 
+
+Figure N shows the posterior probabilty estimations under each method for Model 1 and Model 2, the beta binomial type II and type III, respectively. For model 3 and 4, the probabilities were approximately 0 for every method, so there were omitted to prevent redundancy. 
+```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap = 'Figure N'}
+knitr::include_graphics("results_sum.png")
+```
+
+Ideally, if the design point selection method was efficient at discriminating against the wrong models, the value for the posterior probability for model 1 should be much higher than model 2. From these results, it appears that method 1 was the best at recovering the true model, while method 0 gave uninformative results, with the probabilties for model 1 and 2 be relatively similar. Lastly, method 6 performed very poorly, with this method recovering the wrong model. 
 
 # References
 Moffat Hayden, Hainy Markus, Papanikolaou Nikos E. and Drovandi Christopher 2020Sequential experimental design for predator–prey functional response experimentsJ. R. Soc. Interface.1720200156
