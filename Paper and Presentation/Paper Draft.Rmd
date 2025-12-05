@@ -36,7 +36,11 @@ Therefore we deployed a sensitivity analysis with the motivation to rigorously v
 
 The goal was to quantify and observe the trade-off between lower and higher, particle size, where lower particle quantities result in shorter compute time but unstable, low-resolution posterior distributions that yield unreliable sequential design choices. We hypothesized that while a statistically optimal $N$ value exists (yielding minimum noise), the practical choice ($\mathbf{N=500}$) must represent the highest particle count that is feasible within typical resource constraints.Therefore, we conducted a sensitivity analysis on $N \in \{30, 100, 500, 1000\}$ to examine the author's choice of $N = 500.$
 
+## Experiment 2: Determining the Best Method of Selecting Design Points
 
+One of the purposes of the study involved looking at methods of choosing design points for a predator-prey experiment. Design points are simply the experimental conditions, and in this case, the initial number of prey. The authors lay out a total of six methods, but in this experiment, only two were explored with the addition of a new method. The first method (R=0) involves selecting a design point randomly every experiment, and the second (R=1) selects a design point that maximizes utility for parameter estimation. We introduced a third method (R=6), which involves selecting all of the design points for every experiment up-front. Under this method, design points can not be updated as experiments progress, but also better reflects realistic experimental design as researchers may need to know their resources and timelines before beginning their experimentation. 
+
+For this experiment, the true model was set to Beta Binomial Type II (Model 1). Due the computational weight of method 1, the number of iterations was scaled down to 10, and the number of particles to 200. The true parameters for a, $T_{h}$, and $\lambda$, were kept at 0.5, 0.7, and 0.5, respectively. 
 
 
 ## Experiment 3: Two-step Move Step
@@ -45,7 +49,11 @@ $$R_m \ge \frac{\log{c}}{\log{(1-p)}}$$
    where $c$ is a pre-selected probability for the particle to move and $p$ is acceptance probability. There are cases where this inequality is not true, and one move step is not sufficient. Thus, in this experiment, we study the effects of using two move steps after each re-sampling. We know that having two steps increases the uniqueness of the particle set and that the probability is greater for each particle to move with two rounds. Because of this, we aim to find whether diversifying the particles will improve the random models' posterior distributions.
 
 # Results
-# graphs to the moon and back
+
+
+## Results: Experiment 2
+
+
 
 
 # References
