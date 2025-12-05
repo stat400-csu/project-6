@@ -36,8 +36,17 @@ Therefore we deployed a sensitivity analysis with the motivation to rigorously v
 
 The goal was to quantify and observe the trade-off between lower and higher, particle size, where lower particle quantities result in shorter compute time but unstable, low-resolution posterior distributions that yield unreliable sequential design choices. We hypothesized that while a statistically optimal $N$ value exists (yielding minimum noise), the practical choice ($\mathbf{N=500}$) must represent the highest particle count that is feasible within typical resource constraints.Therefore, we conducted a sensitivity analysis on $N \in \{30, 100, 500, 1000\}$ to examine the author's choice of $N = 500.$
 
+
+
+
+## Experiment 3: Two-step Move Step
+  Sequential Monte Carlo involves taking weighted samples (particles) and iteratively changing them to more closely match a target distribution. To get a new posterior distribution for each iteration of Sequential Monte Carlo, each particle is re-weighted. These weights are often skewed, however, and the effective sample size is reduced. When the effective sample size is below a threshold (N/2 in the case of this study), it is best to re-sample and conduct a move step to diversify the particles, since duplicates often occur. The move step shifts particles according to probabilites in a Markov Chain Monte Carlo Kernel. Moffat et al. (2020) uses one move step, but outlines that is may be too few to diversify the particle set. The appropriate amount of times to conduct a move step for each particle is outlined as:
+$$R_m \ge \frac{\log{c}}{\log{(1-p)}}$$
+   where $c$ is a pre-selected probability for the particle to move and $p$ is acceptance probability. There are cases where this inequality is not true, and one move step is not sufficient. Thus, in this experiment, we study the effects of using two move steps after each re-sampling. We know that having two steps increases the uniqueness of the particle set and that the probability is greater for each particle to move with two rounds. Because of this, we aim to find whether diversifying the particles will improve the random models' posterior distributions.
+
 # Results
 # graphs to the moon and back
+
 
 # References
 Moffat Hayden, Hainy Markus, Papanikolaou Nikos E. and Drovandi Christopher 2020Sequential experimental design for predator–prey functional response experimentsJ. R. Soc. Interface.1720200156
