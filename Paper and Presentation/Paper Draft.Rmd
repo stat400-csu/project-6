@@ -23,7 +23,18 @@ motivation
 
 # Methodology
 ## part one
-asdf
+
+The overarching goal of the sequential experimental design presented in this paper is to efficiently identify the correct functional response model and precisely estimate its parameters. Achieving this goal requires balancing statistical accuracy with computational feasibility.
+
+## Challenge of Bayesian Inference 
+The Sequential Experimental Design framework relies on Bayesian inference, which necessitates accurately tracking the posterior distribution of the model parameters. Calculating this high-dimensional posterior analytically is computationally intractable.Necessity of Simulation: To overcome this, the algorithm employs Sequential Monte Carlo (SMC) methods, which approximate the continuous posterior distribution using a discrete set of $\mathbf{N}$ particles.
+
+## Experiment 1: Sensitivity Analysis 
+The Particle Problem: The accuracy of this approximation, and thus the reliability of the entire sequential design, is directly tied to the number of particles, $N$.
+
+Therefore we deployed a sensitivity analysis with the motivation to rigorously validate the selection of the particle count $N$ used by the authors ($\mathbf{N=500}$). 
+
+The goal was to quantify and observe the trade-off between lower and higher, particle size, where lower particle quantities result in shorter compute time but unstable, low-resolution posterior distributions that yield unreliable sequential design choices. We hypothesized that while a statistically optimal $N$ value exists (yielding minimum noise), the practical choice ($\mathbf{N=500}$) must represent the highest particle count that is feasible within typical resource constraints.Therefore, we conducted a sensitivity analysis on $N \in \{30, 100, 500, 1000\}$ to examine the author's choice of $N = 500.$
 
 # Results
 # graphs to the moon and back
