@@ -165,12 +165,27 @@ run_smc_simulation <- function(input_N = 500, input_R = 0, input_I = 25, input_s
     
     # Plot marginal posterior distributions
     cat(paste("Plotting results for Model", models[M]), sep="\n")
-    source('SMC_plot.R', local = TRUE)
+    source('SMC_plot_Juliette_Copy.R', local = TRUE)
   }
   
   # Calculate Posterior Model Probabilities
-  posterior_model_prob = exp(log_Z - logsumexp(log_Z,0))
   
+  # Define the names of the models for clear output
+   model_names <- c(
+  "Beta Binomial type 2 functional response model",
+  "Beta Binomial type 3 functional response model",
+  "Binomial type 2 functional response model",
+  "Binomial type 3 functional response model"
+)
+
+# Calculate Posterior Model Probabilities
+  posterior_model_prob = exp(log_Z - logsumexp(log_Z,0))
+
+# Print the results to the console
+  for (M in 1:K) {
+  cat(paste(model_names[M], "probability:", posterior_model_prob[M], "\n"))
+}
+
   # Return a list of the important results to use later if needed
   return(list(
     final_probabilities = posterior_model_prob,
