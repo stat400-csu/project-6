@@ -47,6 +47,48 @@ Therefore we deployed a sensitivity analysis with the motivation to rigorously v
 
 The goal was to quantify and observe the trade-off between lower and higher, particle size, where lower particle quantities result in shorter compute time but unstable, low-resolution posterior distributions that yield unreliable sequential design choices. We hypothesized that while a statistically optimal $N$ value exists (yielding minimum noise), the practical choice ($\mathbf{N=500}$) must represent the highest particle count that is feasible within typical resource constraints.Therefore, we conducted a sensitivity analysis on $N \in \{30, 100, 500, 1000\}$ to examine the author's choice of $N = 500.$
 
+## Qualitative Results
+
+We focused our qualitative assessment on the Binomial Type 2 Model, as it was confirmed to be the most likely model by the highly stable $N=500$ and $N=1000$ runs as well as the original experiment results. The analysis of its marginal posteriors directly shows the convergence of the Law of Large Numbers towards the most likely model, demonstrated below by the probability output for N = 1000:
+
+```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap= 'Figure 1'}
+knitr::include_graphics("Probability Table N = 1000.png")
+```
+Below we will be comparing the plot output for each N value. 
+First, we will start with N = 30:
+```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap= 'N = 30 Type 2'}
+knitr::include_graphics("N = 30 Type 2.png")
+```
+Plots for N = 100:
+```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap= 'N = 100 Type 2'}
+knitr::include_graphics("N = 100 Type 2.png")
+```
+
+Plots for N = 500:
+```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap= 'N = 500 Type 2'}
+knitr::include_graphics("N = 500 Type 2.png")
+```
+
+Plots for N = 1000:
+```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap= 'N = 1000 Type 2'}
+knitr::include_graphics("N = 1000 Type 2.png")
+```
+## Decreasing Bumps and Tails (The Noise Reduction)
+In the plots, the black vertical lines represent the true parameters, a, $T_{h}$, and $\lambda$, were kept at 0.5, 0.7, and 0.5, respectively. As $N$ increases, the distribution moves from being jagged and lumpy (high frequency of small bumps and irregular tails) to being smooth and clean (a single, well-defined curve), especially observed in the parameter, a, or attack rate. Low $N$ ($\le 100$): The bumps and irregular tails represent particle clustering and noise. Because there are so few particles, the kernel density estimator struggles to create a smooth curve, and the random clustering caused by the resampling step creates artifacts. This is an unstable, low-resolution approximation. High $N$ ($\ge 500$): The smooth curve confirms that the large number of particles is now providing a high-resolution and stable approximation of the true, smooth posterior distribution. Due to the random nature of the experiment with R being set to 0, there are still some observed artifacts in the tail of parameters like $\lambda$ in higher values of N, but the bumpiness 
+
+## Increased Confidence/Narrowness (The Convergence)
+While still not a perfect estimate of the true parameters, it appears that the algorithm is becoming more certain about the true parameter value. Precision: A higher, narrower peak indicates that the distribution's variance (spread) has decreased in the higher N values of N = 500 and N = 1000. 
+
+After observing qualitative findings from the 4 different particle values, it is necessary to evaluate the quantitative compute time of each particle size.
+
+## Compute time
+
+```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap= 'Time To Compute Per Particle Size (N)'}
+knitr::include_graphics("N size and computational time.png")
+```
+
+
+
 ## Experiment 2: Determining the Best Method of Selecting Design Points
 
 One of the components of the study involved looking at methods of choosing design points for a predator-prey experiment. Design points are simply the experimental conditions, and in this case, the initial number of prey. The authors lay out a total of six methods, but in this experiment, only two were explored with the addition of a new method. The first method (R=0) involves selecting a design point randomly every experiment, and the second (R=1) selects a design point that maximizes utility for parameter estimation. We introduced a third method (R=6), which involves selecting all of the design points for every experiment up-front. Under this method, design points can not be updated as experiments progress, but also better reflects realistic experimental design as researchers may need to know their resources and timelines before beginning their experimentation. 
