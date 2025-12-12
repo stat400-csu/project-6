@@ -1,11 +1,12 @@
 ---
 title: "Sequential Experimental Design for Predator-Prey Models"
-subtitle: "Stat 400 Final Project"
 author: "Juliette Dashe, Jake Brisnehan, Mia Krause"
 date: "`r Sys.Date()`"
-output: 
+output:
+  beamer_presentation: default
   ioslides_presentation:
     widescreen: true
+subtitle: Stat 400 Final Project
 ---
 
 ```{r setup, include=FALSE}

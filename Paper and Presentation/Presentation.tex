@@ -1,0 +1,401 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+  ignorenonframetext,
+]{beamer}
+\newif\ifbibliography
+\usepackage{pgfpages}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{caption label separator}{: }
+\setbeamercolor{caption name}{fg=normal text.fg}
+\beamertemplatenavigationsymbolsempty
+% remove section numbering
+\setbeamertemplate{part page}{
+  \centering
+  \begin{beamercolorbox}[sep=16pt,center]{part title}
+    \usebeamerfont{part title}\insertpart\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{section page}{
+  \centering
+  \begin{beamercolorbox}[sep=12pt,center]{section title}
+    \usebeamerfont{section title}\insertsection\par
+  \end{beamercolorbox}
+}
+\setbeamertemplate{subsection page}{
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center]{subsection title}
+    \usebeamerfont{subsection title}\insertsubsection\par
+  \end{beamercolorbox}
+}
+% Prevent slide breaks in the middle of a paragraph
+\widowpenalties 1 10000
+\raggedbottom
+\AtBeginPart{
+  \frame{\partpage}
+}
+\AtBeginSection{
+  \ifbibliography
+  \else
+    \frame{\sectionpage}
+  \fi
+}
+\AtBeginSubsection{
+  \frame{\subsectionpage}
+}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Sequential Experimental Design for Predator-Prey Models},
+  pdfauthor={Juliette Dashe, Jake Brisnehan, Mia Krause},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Sequential Experimental Design for Predator-Prey Models}
+\subtitle{Stat 400 Final Project}
+\author{Juliette Dashe, Jake Brisnehan, Mia Krause}
+\date{2025-12-12}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}{Motivation: The Ecological Problem}
+\phantomsection\label{motivation-the-ecological-problem}
+\textbf{How do predators respond to prey density?}
+
+\begin{itemize}
+\tightlist
+\item
+  {\textbf{Holling's Type II (Glutton):}} Eats fast, gets full quickly.
+  \[
+  \frac{dN}{dt} =  -\frac{aN}{1+aT_{h}N}
+  \]
+\item
+  {\textbf{Holling's Type III (Learner):}} Slow start (learning),
+  accelerates, then gets full. \[
+  \frac{dN}{dt} = -\frac{aN^2}{1+aT_{h}N^2}
+  \]
+\end{itemize}
+
+where N = prey density, a = attack rate, \(T_{h}\) = handling time
+
+\begin{frame}{Visualizing the Challenge}
+\phantomsection\label{visualizing-the-challenge}
+\textbf{The Issue:} These biological behaviors look mathematically
+identical at high prey densities.
+
+\begin{center}\includegraphics[width=0.6\linewidth]{Statistical Challenge} \end{center}
+\end{frame}
+
+\begin{frame}{Study Background}
+\phantomsection\label{study-background}
+\textbf{Before Starting Experiment}:
+
+\begin{flushleft}\includegraphics[width=300px]{model_types} \end{flushleft}
+
+\begin{itemize}
+\item
+  Select a true model, this is the distribution that will be used to
+  sample the number of prey consumed.
+\item
+  Select true values for the parameters
+\item
+  Select the number of iterations (I = 25), particles (N = 500), and
+  time (t = 24 hrs)
+\end{itemize}
+
+\begin{flushleft}\includegraphics[width=0.8\linewidth]{pars_table} \end{flushleft}
+\end{frame}
+
+\begin{frame}{Sequential Bayesian Framework}
+\phantomsection\label{sequential-bayesian-framework}
+\begin{enumerate}
+[1)]
+\item
+  Start with a design point (experiment), which contains the conditions
+  of a single experiment.
+\item
+  Draw parameter samples (particles) from the prior distributions
+\item
+  Simulate data under each model at that selected design point
+\item
+  Compute likelihoods for each model given the simulated data.
+\item
+  Update particle weights, and resample if effective sample size (ESS)
+  is below the threshold N/2. ESS is a measure of of the efficiency of a
+  particle set.
+\item
+  Update model probabilities and repeat
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Sensitivity Analysis of Particle Count in SMC}
+\phantomsection\label{sensitivity-analysis-of-particle-count-in-smc}
+\textbf{Goal}: Determine the computational efficiency of author's
+original choice of N = 500 by analyzing cost-benefit trade-off.
+
+\begin{itemize}
+\item
+  Sequential Monte Carlo methods approximate the parameter posterior
+  distributions using particles.
+\item
+  SMC requires a sufficient number of particles (N) to minimize the
+  Monte Carlo Variance without causing excessive computational cost, or
+  runtime.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Experiment Set Up}
+\phantomsection\label{experiment-set-up}
+Computed marginal posterior distributions for: * Binomial and beta
+binomial * Type 2 and Type 3 functional response modes.
+
+\begin{itemize}
+\item
+  Kept design strategy constant at R = 0 (random design) to isolate
+  effect of particle count N from the sequential design choices.
+\item
+  Tested four discrete particle counts:
+\end{itemize}
+
+\[N \in \{30, 100, 500 \text{ (Author's Choice)}, 1000\}\]
+
+\begin{itemize}
+\tightlist
+\item
+  Due to high computational costs, we only performed a Single-Run
+  Sensitivity Analysis. We will be looking at runtime vs.~posterior
+  smoothness results.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Qualitative Results: N = 30 versus N = 500}
+\phantomsection\label{qualitative-results-n-30-versus-n-500}
+\begin{columns}[T]
+\begin{column}{0.48\linewidth}
+N = 30
+\end{column}
+
+\begin{column}{0.48\linewidth}
+N = 500
+\end{column}
+
+Highly unreliable estimates for N = 30 and multi peaked
+
+\begin{frame}{Qualitative Results: N = 100 versus N = 500}
+\phantomsection\label{qualitative-results-n-100-versus-n-500}
+\begin{column}{0.48\linewidth}
+N = 100
+\end{column}
+
+\begin{column}{0.48\linewidth}
+N = 500
+\end{column}
+\end{frame}
+\end{columns}
+
+Improved smoothness for N = 100, still small bumps in the tails
+\end{frame}
+
+\begin{frame}{Qualitative Results: N = 1000 versus N = 500}
+\phantomsection\label{qualitative-results-n-1000-versus-n-500}
+\begin{column}{0.48\linewidth}
+N = 1000
+\end{column}
+
+\begin{column}{0.48\linewidth}
+N = 500
+\end{column}
+\end{frame}
+
+N = 1000 has smoothest distributions, due to the Law of Large Numbers
+dictating that as N increases, the Monte Carlo variance decreases. We
+can be confident that N = 1000 and N = 500 are the statistically stable
+options, but have to take into account computation cost.
+\end{frame}
+
+\begin{frame}{Comparing Run Time}
+\phantomsection\label{comparing-run-time}
+\begin{center}\includegraphics[width=0.5\linewidth]{N size and computational time} \end{center}
+
+\begin{center}\includegraphics[width=0.5\linewidth]{percent increase in wait time} \end{center}
+\end{frame}
+
+\begin{frame}{\textbf{Overall}}
+\phantomsection\label{overall}
+For maximal statistical reliability, N = 1000 is desired. But due to
+computational constraints as well as changes in design (where R is not 0
+or random), the author's choice of N = 500 seems like a pragmatic
+computational compromise.
+\end{frame}
+
+\begin{frame}{Setup For Determining Best Experimental Design}
+\phantomsection\label{setup-for-determining-best-experimental-design}
+\textbf{Goal}: Explore the best method for determining experimental
+design points that maximize posterior probability for true model and
+accurately estimates the true parameters.
+
+\begin{itemize}
+\item
+  Due to computational complexity with method 1, the number of
+  iterations and particles were scaled down to 10 and 200, respectively.
+\item
+  All 3 methods were tested, with the standard true parameters.
+\item
+  For this experiment, Model 1 was selected as the true model
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Results - Visual}
+\phantomsection\label{results---visual}
+Marginal Posterior Distributions for Beta Binomial Type 2 Functional
+Response
+
+\begin{center}\includegraphics[width=1\linewidth]{plot_results} \end{center}
+\end{frame}
+
+\begin{frame}{Results - Quantitative}
+\phantomsection\label{results---quantitative}
+\begin{center}\includegraphics[width=1\linewidth]{results_sum} \end{center}
+
+\textbf{Overall}:
+
+\begin{itemize}
+\item
+  All methods appeared to have relatively similar accuracy when
+  estimating the true parameters
+\item
+  Method 1 best recovers the true model, Method 0 is uninformative, and
+  Method 6 performed poorly
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Why Move Steps are Used}
+\phantomsection\label{why-move-steps-are-used}
+\begin{itemize}
+\item
+  Sequential Monte Carlo involves taking weighted samples (particles)
+  and iteratively changing them to more closely match a target
+  distribution.
+\item
+  To get a new posterior distribution for each iteration of Sequential
+  Monte Carlo, each particle is re-weighted. However, these weights are
+  often skewed, and the effective sample size is reduced.
+\item
+  When the effective sample size is below a threshold, it is best to
+  re-sample and conduct a move step to diversify the particles, since
+  duplicates often occur.
+\item
+  Moffat et al.~(2020) uses one move step, but outlines that is may be
+  too few to diversify the particle set. Thus, we explore using two.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Two-Step Move Step}
+\phantomsection\label{two-step-move-step}
+\begin{itemize}
+\item
+  The appropriate amount of times to conduct a move step for each
+  particle is outlined as: \[R_m \ge \frac{\log{c}}{\log{(1-p)}}\] where
+  \(c\) is a pre-selected probability for the particle to move and \(p\)
+  is acceptance probability.
+\item
+  We know that having two steps increases the uniqueness of the particle
+  set.
+\item
+  We know that the probability is greater for each particle to move with
+  two rounds
+\item
+  We aim to find whether diversifying the particles will improve the
+  random models' posterior distributions.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{One Step with Type II as True Model}
+\phantomsection\label{one-step-with-type-ii-as-true-model}
+\begin{itemize}
+\tightlist
+\item
+  The model of the Type II response (true) is on the left and the model
+  of the Type III (false) response is on the right.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{One Step with Type III as True Model}
+\phantomsection\label{one-step-with-type-iii-as-true-model}
+\begin{itemize}
+\tightlist
+\item
+  The model of the Type II response (false) is on the left and the model
+  of the Type III (true) response is on the right.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Two Steps with Type II as True Model}
+\phantomsection\label{two-steps-with-type-ii-as-true-model}
+\begin{itemize}
+\tightlist
+\item
+  The model of the Type II response (true) is on the left and the model
+  of the Type III (false) response is on the right.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Two Steps with Type III as True Model}
+\phantomsection\label{two-steps-with-type-iii-as-true-model}
+\begin{itemize}
+\tightlist
+\item
+  The model of the Type II response (false) is on the left and the model
+  of the Type III (true) response is on the right.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Take Aways}
+\phantomsection\label{take-aways}
+\begin{itemize}
+\item
+  It appears that overall, having two steps helps the distributions
+  match their true posteriors more accurately.
+\item
+  Moffat et al., (2020) explores much better approaches, but these are
+  very expensive. This approach likely increases significantly.
+\end{itemize}
+\end{frame}
+
+\end{document}
