@@ -35,12 +35,20 @@ Both of these model the number of prey consumed in a given time interval, and ta
 # Methodology
 ## Goal
 
-The overarching goal of the sequential experimental design presented in this paper is to efficiently identify the correct functional response model and precisely estimate its parameters. Achieving this goal requires balancing statistical accuracy with computational feasibility.
+The overarching goal of the sequential experimental design presented in this report is to efficiently identify the correct functional response model and precisely estimate its parameters. Achieving this goal requires balancing statistical accuracy with computational feasibility.
+
+## Sequential Monte Carlo Algorithm
+
+Throughout this report, Hayden Moffat's Sequential Monte Carlo algorithm in R was used. The algorithm starts but requiring the user to select true parameter values, true model, number of iterations, and particle size. Next, the user must also select the method of choosing design points. While Moffat's original manuscript lays out 6 different methods, this report focuses on two of these methods along with an additional third. The first method, method 0, also denoted as R=0, selects design points randomly every experiment. The second, method 1, selects design points that maximizes the utility for parameter estimation. The final method, method 6, was not included in Moffat's original design but rather added for the purposes of this project. This method selects all design points up front, not allowing updates as experiments progress. This method is the least flexible out of the three, but most realistically depicts real experimentation as researchers require their resources to be counted before beginning experiments. 
+
+After selecting all of the above, the algorithm then draws particles from the prior distribution. Under each model, the algorithm simulates what would happen under the given design point, as well as compute the likelihood of that simulated outcome compared to the real data. Particles are then assigned weights based on their abilities to accurately describe the data. If particle weights become too concentrated, the algorithm performs a resampling move step to introduce diversity back into the particle set. Finally, the model probabilities are updated, and this process repeats under each model and iteration.  
 
 ## Challenge of Bayesian Inference 
+
 The Sequential Experimental Design framework relies on Bayesian inference, which necessitates accurately tracking the posterior distribution of the model parameters. Calculating this high-dimensional posterior analytically is computationally intractable.Necessity of Simulation: To overcome this, the algorithm employs Sequential Monte Carlo (SMC) methods, which approximate the continuous posterior distribution using a discrete set of $\mathbf{N}$ particles.
 
-## Experiment 1: Sensitivity Analysis 
+
+# Experiment 1: Sensitivity Analysis 
 The Particle Problem: The accuracy of this approximation, and thus the reliability of the entire sequential design, is directly tied to the number of particles, $N$.
 
 Therefore we deployed a sensitivity analysis with the motivation to rigorously validate the selection of the particle count $N$ used by the authors ($\mathbf{N=500}$). 
@@ -87,26 +95,16 @@ After observing qualitative findings from the 4 different particle values, it is
 knitr::include_graphics("N size and computational time.png")
 ```
 
+</br>
 
 
-## Experiment 2: Determining the Best Method of Selecting Design Points
+# Experiment 2: Determining the Best Method of Selecting Design Points
 
 One of the components of the study involved looking at methods of choosing design points for a predator-prey experiment. Design points are simply the experimental conditions, and in this case, the initial number of prey. The authors lay out a total of six methods, but in this experiment, only two were explored with the addition of a new method. The first method (R=0) involves selecting a design point randomly every experiment, and the second (R=1) selects a design point that maximizes utility for parameter estimation. We introduced a third method (R=6), which involves selecting all of the design points for every experiment up-front. Under this method, design points can not be updated as experiments progress, but also better reflects realistic experimental design as researchers may need to know their resources and timelines before beginning their experimentation. 
 
 For this experiment, the goal was to explore which of the three methods maximized the posterior probabilty for the true selected model, as well as best estimated the true parameters. The true model was set to Beta Binomial Type II (Model 1), and due the computational weight of method 1, the number of iterations was scaled down to 10, and the number of particles to 200. The true parameters for a, $T_{h}$, and $\lambda$, were kept at 0.5, 0.7, and 0.5, respectively. 
 
-
-## Experiment 3: Two-step Move Step
-  Sequential Monte Carlo involves taking weighted samples (particles) and iteratively changing them to more closely match a target distribution. To get a new posterior distribution for each iteration of Sequential Monte Carlo, each particle is re-weighted. These weights are often skewed, however, and the effective sample size is reduced. When the effective sample size is below a threshold (N/2 in the case of this study), it is best to re-sample and conduct a move step to diversify the particles, since duplicates often occur. The move step shifts particles according to probabilites in a Markov Chain Monte Carlo Kernel. Moffat et al. (2020) uses one move step, but outlines that is may be too few to diversify the particle set. The appropriate amount of times to conduct a move step for each particle is outlined as:
-$$R_m \ge \frac{\log{c}}{\log{(1-p)}}$$
-   where $c$ is a pre-selected probability for the particle to move and $p$ is acceptance probability. There are cases where this inequality is not true, and one move step is not sufficient. Thus, in this experiment, we study the effects of using two move steps after each re-sampling. We know that having two steps increases the uniqueness of the particle set and that the probability is greater for each particle to move with two rounds. Because of this, we aim to find whether diversifying the particles will improve the random models' posterior distributions.
-
-# Results
-
-
-## Results: Experiment 2
-
-### Parameter Estimation
+## Parameter Estimation
 
 Figure 1 shows the marginal posterior distributions for each parameter under Model 1. 
 
@@ -116,14 +114,26 @@ knitr::include_graphics("plot_results.png")
 
 Based on these plots, there appears to be little differences across methods in regards to how well each estimates the true parameters. Ideally, because method 1 selects design points with the intention of estimating parameters, it should result in the best estimation of those parameters. Apart from estimating parameter $\lambda$, the plots do not reflect this. This may be due to seed randomness, decreasing the particle size, or a combination of both. 
 
-### Posterior Probability 
+## Posterior Probability 
 
 Figure N shows the posterior probabilty estimations under each method for Model 1 and Model 2, the beta binomial type II and type III, respectively. For model 3 and 4, the probabilities were approximately 0 for every method, so there were omitted to prevent redundancy. 
 ```{r, echo=FALSE, out.width="100%", fig.align='center', fig.cap = 'Figure 2'}
 knitr::include_graphics("results_sum.png")
 ```
 
-Ideally, if the design point selection method was efficient at discriminating against the wrong models, the value for the posterior probability for model 1 should be much higher than model 2. From these results, it appears that method 1 was the best at recovering the true model, while method 0 gave uninformative results, with the probabilties for model 1 and 2 be relatively similar. Lastly, method 6 performed very poorly, with this method recovering the wrong model. 
+Ideally, if the design point selection method was efficient at discriminating against the wrong models, the value for the posterior probability for model 1 should be much higher than model 2. From these results, it appears that method 1 was the best at recovering the true model, while method 0 gave uninformative results, with the probabilities for model 1 and 2 being relatively similar. Lastly, method 6 performed very poorly, with this method recovering the wrong model. 
+
+
+
+# Experiment 3: Two-step Move Step
+  Sequential Monte Carlo involves taking weighted samples (particles) and iteratively changing them to more closely match a target distribution. To get a new posterior distribution for each iteration of Sequential Monte Carlo, each particle is re-weighted. These weights are often skewed, however, and the effective sample size is reduced. When the effective sample size is below a threshold (N/2 in the case of this study), it is best to re-sample and conduct a move step to diversify the particles, since duplicates often occur. The move step shifts particles according to probabilites in a Markov Chain Monte Carlo Kernel. Moffat et al. (2020) uses one move step, but outlines that is may be too few to diversify the particle set. The appropriate amount of times to conduct a move step for each particle is outlined as:
+$$R_m \ge \frac{\log{c}}{\log{(1-p)}}$$
+   where $c$ is a pre-selected probability for the particle to move and $p$ is acceptance probability. There are cases where this inequality is not true, and one move step is not sufficient. Thus, in this experiment, we study the effects of using two move steps after each re-sampling. We know that having two steps increases the uniqueness of the particle set and that the probability is greater for each particle to move with two rounds. Because of this, we aim to find whether diversifying the particles will improve the random models' posterior distributions.
+
+# Results
+
+
+
 
 # References
 Moffat Hayden, Hainy Markus, Papanikolaou Nikos E. and Drovandi Christopher 2020Sequential experimental design for predator–prey functional response experimentsJ. R. Soc. Interface.1720200156
