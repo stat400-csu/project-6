@@ -130,7 +130,71 @@ Ideally, if the design point selection method was efficient at discriminating ag
 $$R_m \ge \frac{\log{c}}{\log{(1-p)}}$$
    where $c$ is a pre-selected probability for the particle to move and $p$ is acceptance probability. There are cases where this inequality is not true, and one move step is not sufficient. Thus, in this experiment, we study the effects of using two move steps after each re-sampling. We know that having two steps increases the uniqueness of the particle set and that the probability is greater for each particle to move with two rounds. Because of this, we aim to find whether diversifying the particles will improve the random models' posterior distributions.
 
-# Results
+## Results for Two-Step Move Step
+
+  To evaluate if the performance of this model improves with two move steps, we are comparing the original model with one move step to our model with two move steps. In the interest of computational effort/time, only the binomial distributions under the random design point model are compared for type II and type III curves.
+
+  Figures 9-12 present the marginal distributions for attack rate $a$, and handling time $T_h$, for predictions of the type II curve on the left, and the type III curve on the right. Within these marginal distributions, the true parameter value is represented by a vertical black line. The functional response model probabilities, which show which model is being predicted, is also given below each graph. Beta binomial model probabilities are included, but serve as a confirmation that the model is not predicting very poorly, as the values should always be low. Finally, the true model is given in each caption.
+
+```{r, echo=FALSE, fig.align = "center", out.width = "48%", fig.show = "hold"}
+knitr::include_graphics(c(
+  "Original_Type_II_true_correct_graph.png",
+  "Original_Type_II_true_false_graph.png"
+))
+```
+```{r, echo=FALSE, fig.align = "center", out.width = "90%",fig.cap = "One-Step Move Step, Type II Curve as True Model."}
+knitr::include_graphics(
+  "Original_Type_II_true_post.png")
+```
+
+Under the original model in Figure 9, it is obvious that the model is predicting poorly. The true marginal distributions are not centered on the black line, and the functional response model probability is higher for the type III curve, which is the incorrect model. Without unique particles under a move step, the model could be pulled in directions that do not represent what is true. Especially under the random design point model, this is common, and presents a clear issue. 
+
+```{r, echo=FALSE, fig.align = "center", out.width = "48%", fig.show = "hold"}
+knitr::include_graphics(c(
+  "Original_Type_III_true_false_graph.png",
+  "Original_Type_III_true_ correct_graph.png"
+))
+```
+```{r, echo=FALSE, fig.align = "center", out.width = "90%",fig.cap = "One-Step Move Step, Type III Curve as True Model."}
+knitr::include_graphics(
+  "Original_Type_III_true_post.png")
+```
+
+In Figure 10, we see good prediction for the true model. This was commonly the case for the type III curve, it seemed that the random model always leaned toward predicting the type III as true. 
+
+```{r, echo=FALSE, fig.align = "center", out.width = "48%", fig.show = "hold"}
+knitr::include_graphics(c(
+  "Two_step_Type_II_true_correct_graph.png",
+  "Two_step_Type_II_true_false_graph.png"
+))
+```
+```{r, echo=FALSE, fig.align = "center", out.width = "90%",fig.cap = "Two-step Move Step, Type II Curve as True Model."}
+knitr::include_graphics(
+  "Two_step_Type_II_true_post.png")
+```
+
+In Figure 11, under the two-step move step, we see improvements for the marginal distributions. The correct graphs peak around the true parameters, while the incorrect graphs do not. The functional response model probabilities are more even, but this is expected under the random model. 
+
+```{r, echo=FALSE, fig.align = "center", out.width = "48%", fig.show = "hold"}
+knitr::include_graphics(c(
+  "Two_step_Type_III_true_false_graph.png",
+  "Two_step_Type_III_true_correct_graph.png"
+))
+```
+```{r, echo=FALSE, fig.align = "center", out.width = "90%",fig.cap = "Two-step Move Step, Type II Curve as True Model."}
+knitr::include_graphics(
+  "Two_step_Type_III_true_post.png")
+```
+
+Finally, in Figure 12, all marginal distributions are well-centered around their true values. The functional response model probabilities are more even as well, but the type III model is still higher.
+
+## Evaluation of Adding Move Steps
+
+Overall, comparing the one-step to the two-step move steps, we see overall improvement in the random models' case. Because this is not influenced by a utility function like in Moffat et al. (2020), the functional response model probabilities are likely to be more even. In the one-step model, they are very large, which shows there is some influence that is creating bias. This is especially evident in Figure 9, where the true model is not predicted well, and the incorrect model is predicted at a much greater probability (0.785). The clearest improvements are in the marginal distributions for each parameter, however. Each distribution peaks around the true value for the true model that is being predicted.
+
+With these model improvements, it naturally raises the question of why the original author did not incorporate multiple move steps. The obvious reason is that it takes more computational time. Running the move step algorithm extends each iteration already, so adding multiple steps increases the time even more. Since the original paper is focused on multiple models that are better at predictions and often take long to run anyway, using two move steps may not improve predictions in the more complex models enough to warrant making the process slower. Moffat et al. (2020) is also a study that is a first of its kind in this subject, and suggests ways it could be extended. Adding move steps is one of these suggestions, since one move step often does not diversify the particle set completely. 
+
+In this study, we chose two move steps because it was enough to diversify the particle set completely. Each iteration under two move steps showed that the particle set of $N = 50$ was completely unique, while one move step commonly had cases with duplicate particles. Therefore, more than two move steps was never necessary, and would have only increased run-time. Due to this, we believe that using two move steps is the best approach in this algorithm, and if computational time is not an issue, future use of this algorithm should employ the use of two move steps to reduce bias in each iteration. 
 
 
 
