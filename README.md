@@ -13,5 +13,8 @@ To replicate the move-step experiment, navigate to "Jakes_File.Rmd" to run code.
 # Particle Experiment
 To replicate the particle experiments navigate to "stat 400 project.Rmd" to run code. The first chunk loads in libraries, the second reruns the original code as a loop, and the following chunks run the experiment with different N values which are labeled clearly. The final code chunks are to create the descriptive quantitative plots used in the presentation and paper. Ensure that all files ending in "Juliette_Copy.R" are downloaded, as they will be pulled from in the code. Please be aware that the "LeahCordova" problem persists, but all committs that appear as LeahCordova were made by Juliette Dashe, despite efforts to fix this problem.
 
+# Design Point Methods Experiment
+To replicate the comparison of methods of choosing design points, navigate to the 'Mia_Files' folder and 'Mia_Fixed_Design.Rmd' to run the code. The first chunk loads in libraries, and the second runs the entire algorithm. To test each method (Methods 0,1, and 6), the R variable must be changed at the beginning of the second code chunk to the corresponding method that you want to test, so in total, the algorithm should be run 3 times. Ensure that all files starting with "Fixed" in the "Mia_Files" folder are downloaded, as these are used within the algorithm. 
+
 # Presentation and Paper
 To access the Presentation and Paper, access the files by going through "STAT 400 > project-6 > Paper and Presentation". The presentation is then accessed in the file "Presentation.html". For the paper, navigate to "STAT 400 > project-6 > Paper and Presentation". The paper is then accessed in the file "Paper-Draft.pdf". 
