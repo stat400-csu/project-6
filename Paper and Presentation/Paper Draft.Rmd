@@ -95,6 +95,8 @@ After observing qualitative findings from the 4 different particle values, it is
 knitr::include_graphics("N size and computational time.png")
 ```
 
+Our analysis demonstrates that for maximum statistical precision, the $N=500$ configuration seems adequate given the restrictions to  eliminate Monte Carlo variance while also considering the compute time. The author's choice of $N=500$ is therefore revealed as a pragmatic computational compromise, sacrificing $38\%$ of compute time at the expense of slight residual noise in the final parameter estimates.
+
 </br>
 
 
